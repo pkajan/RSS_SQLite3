@@ -1,0 +1,7 @@
+{
+    "dbFileName": "database.db",
+    "tableName": "webfeed",
+    "linkURL": "https://myhosting.eu",
+    "pageTitle": "my RSS",
+    "pwd_hash":"md5_hash_of_your_password"
+}
