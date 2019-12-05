@@ -16,17 +16,20 @@ echo "<?xml version='1.0' encoding='UTF-8'?>
 <description>Torrents links to download</description>
 <link>$linkURL</link>";
 
+$tmpArray = [];
+
 $res = $db->query("SELECT * FROM $tableName");
 while ($data = $res->fetchArray()) {
     $title   = htmlspecialchars($data["title"]);
     $link    = htmlspecialchars($data["link"]);
     $pubDate = htmlspecialchars($data["pubDate"]);
     
-    echo "<item>
+    $string = "<item>
         <title>$title</title>
         <link>$link</link>
         <pubDate>$pubDate</pubDate>
     </item>";
+    array_unshift($tmpArray, $string);
 }
-
+echo implode(" ",$tmpArray);
 echo "</channel></rss>";

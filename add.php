@@ -102,6 +102,8 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == md5($json_dat
     echo "<table class='vypis' border='1'>" . "<th>ID</th>" . "<th>Title</th>" . "<th>Link</th>" . "<th>Date</th>" . "<th>Delete</th>";
     
     $res = $db->query("SELECT * FROM $tableName");
+
+    $tmpArray = [];
     
     while ($data = $res->fetchArray()) {
         $id      = htmlspecialchars($data["id"]);
@@ -109,12 +111,14 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == md5($json_dat
         $link    = htmlspecialchars($data["link"]);
         $pubDate = htmlspecialchars($data["pubDate"]);
         
-        echo "<tr><td>" . $id . "</td>\n";
-        echo "<td>" . $title . "</td>\n";
-        echo "<td title='" . $link . "'>" . substr($data["link"], 0, 40) . "</td>\n";
-        echo "<td>" . $pubDate . "</td>\n";
-        echo "<td><button type='submit' form='form1' onclick=\"sendID(" . $data["id"] . ")\" value='Submit'>Delete</button></td></tr>\n";
+        $string =  "<tr><td>" . $id . "</td>\n" .
+         "<td>" . $title . "</td>\n" .
+         "<td title='" . $link . "'>" . substr($data["link"], 0, 40) . "</td>\n" .
+         "<td>" . $pubDate . "</td>\n" .
+         "<td><button type='submit' form='form1' onclick=\"sendID(" . $data["id"] . ")\" value='Submit'>Delete</button></td></tr>\n";
+         array_unshift($tmpArray, $string);
     }
+    echo implode(" ",$tmpArray);
     echo "</table>";
     
     echo "<form id='form1'><input type='text' id='id' name='id' value='notsetyet' hidden/></form>
