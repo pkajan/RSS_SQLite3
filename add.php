@@ -41,16 +41,22 @@ function add_to_db()
     }
 }
 
+function sha256($string){
+	return hash('sha256', $string);
+}
+
+
+//hash('sha256', $_POST["password"])
 if (!empty($_POST["password"])) {
-    if ($json_data['pwd_hash'] == md5($_POST["password"])) {
-        setcookie("member_login", md5(md5($_POST["password"])), time() + (10 * 365 * 24 * 60 * 60));
+    if ($json_data['pwd_hash'] == sha256($_POST["password"])) {
+        setcookie("member_login", sha256(sha256($_POST["password"])), time() + (10 * 365 * 24 * 60 * 60), NULL, NULL, true, false);
         header("Refresh:0");
     } else {
         echo "Invalid Login";
     }
 }
 
-if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == md5($json_data['pwd_hash'])) {
+if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
     add_to_db();
     
     echo "<form class='tlacitka' method='post' enctype='multipart/form-data'>" . "<table>" . "<tr>" . "<td class='magnet'>" . "Title: <input type='text' name='title'><br/>" . "Link: <input type='text' name='link'><br/>" . "<input class='tlacitko' type='submit' value='Submit'>" . "</td>" . "<td class='torrent'>" . "Select torrent to upload:" . "<input type='file' name='fileToUpload' id='fileToUpload'>" . "<input class='tlacitko' type='submit' value='Upload torrent' name='submiter'>" . "</td>" . "</tr></table></form>";
@@ -133,7 +139,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == md5($json_dat
     }
 } else {
     echo '<form action="" method="post" id="frmLogin">
-        <div>Password: <input name="password" type="password" value="" class="input-field"> 
+        <div>Password: <input name="password" type="password" value="" class="input-field"></div> 
         <div><input type="submit" name="login" value="Login" class="form-submit-button"></div>      
     </form>';
 }
