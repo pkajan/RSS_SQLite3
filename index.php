@@ -14,7 +14,12 @@ echo "<?xml version='1.0' encoding='UTF-8'?>
 <channel>
 <title>$pageTitle</title>
 <description>Torrents links to download</description>
-<link>$linkURL</link>";
+<link>$linkURL</link>
+<item>
+<title>NULL</title>
+<link></link>
+<pubDate>Mon, 01 Jan 2020 00:00:00 +0200</pubDate>
+</item>";
 
 $tmpArray = [];
 
