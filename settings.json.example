@@ -3,5 +3,5 @@
     "tableName": "webfeed",
     "linkURL": "https://myhosting.eu",
     "pageTitle": "my RSS",
-    "pwd_hash":"md5_hash_of_your_password"
+    "pwd_hash":"sha256_hash_of_your_password"
 }
