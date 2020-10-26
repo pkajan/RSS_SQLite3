@@ -92,12 +92,12 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
                 // if everything is ok, try to upload file
             } else {
                 if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-                    echo "<div class='center'>The file " . basename($_FILES["fileToUpload"]["name"]) . " has been uploaded.</div>";
+                    echo "<div class='center'>The file " . htmlspecialchars(basename($_FILES["fileToUpload"]["name"]), ENT_QUOTES, 'UTF-8') . " has been uploaded.</div>";
                     $_POST["title"] = basename($_FILES["fileToUpload"]["name"], ".torrent");
                     $_POST["link"]  = "$linkURL/uploads/" . basename($_FILES["fileToUpload"]["name"]);
                     add_to_db($string, $json_data, $mysqli);
                 } else {
-                    echo $target_file . "<br>";
+                    echo htmlspecialchars($target_file, ENT_QUOTES, 'UTF-8') . "<br>";
                     echo "<div class='center'>Sorry, there was an error uploading your file.</div>";
                 }
             }
