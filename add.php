@@ -49,7 +49,7 @@ function sha256($string){
 //hash('sha256', $_POST["password"])
 if (!empty($_POST["password"])) {
     if ($json_data['pwd_hash'] == sha256($_POST["password"])) {
-        setcookie("member_login", sha256(sha256($_POST["password"])), time() + (10 * 365 * 24 * 60 * 60), NULL, NULL, true, false);
+        setcookie("member_login", sha256(sha256($_POST["password"])), time() + (10 * 365 * 24 * 60 * 60), NULL, NULL, true, true);
         header("Refresh:0");
     } else {
         echo "Invalid Login";
