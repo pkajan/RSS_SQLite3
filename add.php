@@ -22,14 +22,12 @@
     $db->exec("CREATE TABLE $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
     /* will create empty table, if doesnt exist */
 
-    function dbquery($string)
-    {
+    function dbquery($string) {
         global $db;
         $db->exec("$string");
     }
 
-    function add_to_db()
-    {
+    function add_to_db() {
         global $tableName;
         if (!empty($_POST["title"]) and !empty($_POST["link"])) {
             $title   = htmlspecialchars($_POST["title"]);
@@ -43,11 +41,13 @@
         }
     }
 
-    function sha256($string)
-    {
+    function sha256($string) {
         return hash('sha256', $string);
     }
 
+    function removeWeirdThings($string) {
+        return preg_replace("/[^a-zA-Z0-9\.]+/", "", $string);
+    }
 
     //hash('sha256', $_POST["password"])
     if (!empty($_POST["password"])) {
@@ -70,7 +70,7 @@
             if (!file_exists('path/to/directory')) {
                 mkdir($target_dir, 0777, true);
             }
-            $target_file  = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+            $target_file  = $target_dir . removeWeirdThings(basename($_FILES["fileToUpload"]["name"]));
             $uploadOk     = 1;
             $torrFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
             if (isset($_POST["submiter"])) {
@@ -96,8 +96,8 @@
                 } else {
                     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
                         echo "<div class='center'>The file " . htmlspecialchars(basename($_FILES["fileToUpload"]["name"]), ENT_QUOTES, 'UTF-8') . " has been uploaded.</div>";
-                        $_POST["title"] = basename($_FILES["fileToUpload"]["name"], ".torrent");
-                        $_POST["link"]  = "$linkURL/uploads/" . basename($_FILES["fileToUpload"]["name"]);
+                        $_POST["title"] = removeWeirdThings(basename($_FILES["fileToUpload"]["name"], ".torrent"));
+                        $_POST["link"]  = "$linkURL/uploads/" . removeWeirdThings(basename($_FILES["fileToUpload"]["name"]));
                         add_to_db($string, $json_data, $mysqli);
                     } else {
                         echo htmlspecialchars($target_file, ENT_QUOTES, 'UTF-8') . "<br>";
