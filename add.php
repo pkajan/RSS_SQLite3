@@ -46,7 +46,7 @@
     }
 
     function removeWeirdThings($string) {
-        return preg_replace("/[^a-zA-Z0-9\.]+/", "", $string);
+        return preg_replace("/[^a-zA-Z0-9\.\-]+/", "", $string);
     }
 
     //hash('sha256', $_POST["password"])
@@ -70,15 +70,11 @@
             if (!file_exists('path/to/directory')) {
                 mkdir($target_dir, 0777, true);
             }
-            $target_file  = $target_dir . removeWeirdThings(basename($_FILES["fileToUpload"]["name"]));
+            $actualtime = date("Y-m-d--H-i-s");
+            $target_file  = removeWeirdThings(basename($actualtime . "-" . $_FILES["fileToUpload"]["name"]));
             $uploadOk     = 1;
-            $torrFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+            $torrFileType = strtolower(pathinfo($target_dir . $target_file, PATHINFO_EXTENSION));
             if (isset($_POST["submiter"])) {
-                // Check if file already exists
-                if (file_exists($target_file)) {
-                    echo "<div class='center'>Sorry, file already exists.</div>";
-                    $uploadOk = 0;
-                }
                 // Check file size
                 if ($_FILES["fileToUpload"]["size"] > 500000) {
                     echo "<div class='center'>Sorry, your file is too large.</div>";
@@ -94,13 +90,13 @@
                     echo "<div class='center'>Sorry, your file was not uploaded.</div>";
                     // if everything is ok, try to upload file
                 } else {
-                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_dir . $target_file)) {
                         echo "<div class='center'>The file " . htmlspecialchars(basename($_FILES["fileToUpload"]["name"]), ENT_QUOTES, 'UTF-8') . " has been uploaded.</div>";
-                        $_POST["title"] = removeWeirdThings(basename($_FILES["fileToUpload"]["name"], ".torrent"));
-                        $_POST["link"]  = "$linkURL/uploads/" . removeWeirdThings(basename($_FILES["fileToUpload"]["name"]));
+                        $_POST["title"] = str_replace(".torrent", "", basename($_FILES["fileToUpload"]["name"]));
+                        $_POST["link"]  = "$linkURL/uploads/" . $target_file;
                         add_to_db($string, $json_data, $mysqli);
                     } else {
-                        echo htmlspecialchars($target_file, ENT_QUOTES, 'UTF-8') . "<br>";
+                        echo htmlspecialchars($target_dir . $target_file, ENT_QUOTES, 'UTF-8') . "<br>";
                         echo "<div class='center'>Sorry, there was an error uploading your file.</div>";
                     }
                 }
