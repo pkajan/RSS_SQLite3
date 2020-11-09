@@ -54,7 +54,20 @@ function ajax_magnet() {
         data: form_data2,
         success: function (response) {
             alert(response);
-            $('#selectfile').val('');
+            location.reload();//reload page
+        }
+    });
+}
+
+function logout() {
+    $.ajax({
+        type: 'POST',
+        url: 'logout.php',
+        contentType: false,
+        processData: false,
+        data: null,
+        success: function (response) {
+            alert(response);
             location.reload();//reload page
         }
     });

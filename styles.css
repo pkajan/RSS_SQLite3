@@ -1,6 +1,7 @@
 body{
     background-color: black;
     color: white;
+    position: relative;
 }
 
 form{
@@ -74,3 +75,10 @@ table{
 #drag_upload_file #selectfile {
   display: none;
 }
+
+ #button {
+     position:absolute;
+     top:0;
+     right:0;
+ }
+ 

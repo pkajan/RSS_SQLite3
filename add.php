@@ -54,7 +54,7 @@
     //add new entries
     ?>
 
-    <table>
+    <table id="addtab" hidden>
         <tr>
             <td class="magnet">Title: <input id='title' type='text' name='title'><br />Link: <input id='link' type='text' name='link'><br />
                 <input onclick="ajax_magnet();" class='tlacitko' type='button' value='Submit'></td>
@@ -72,6 +72,9 @@
 
 
     <?php
+    if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
+        echo "<script>document.getElementById('addtab').removeAttribute('hidden');</script>";
+    }
     /* show db entries */
     if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
         echo "<table class='vypis' border='1'>" . "<th>ID</th>" . "<th>Title</th>" . "<th>Link</th>" . "<th>Date</th>" . "<th>Delete</th>";
@@ -106,7 +109,7 @@
     }
 
     ?>
-
+    <input id="button" type="button" value="Logout" onclick="logout();">
 </body>
 
 </html>
