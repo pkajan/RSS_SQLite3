@@ -6,6 +6,7 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <title>Add new things into RSS</title>
     <link rel='stylesheet' href='styles.css'>
+    <script src="jquery.min.js"></script>
     <script src='script.js'></script>
 </head>
 
@@ -19,7 +20,7 @@
     $tableName  = $json_data['tableName'];
     $linkURL = $json_data['linkURL'];
     $db         = new SQLite3($dbFileName);
-    $db->exec("CREATE TABLE $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
+    $db->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
     /* will create empty table, if doesnt exist */
 
     function dbquery($string) {
@@ -27,26 +28,8 @@
         $db->exec("$string");
     }
 
-    function add_to_db() {
-        global $tableName;
-        if (!empty($_POST["title"]) and !empty($_POST["link"])) {
-            $title   = htmlspecialchars($_POST["title"]);
-            $link    = htmlspecialchars($_POST["link"]);
-            $pubDate = htmlspecialchars(date('Y-m-d H:i:s')); //2018-08-01 00:00:00
-
-            $textquery = "INSERT INTO $tableName (title, link, pubDate) VALUES('$title', '$link', '$pubDate')";
-            dbquery($textquery);
-
-            header("Location: add.php");
-        }
-    }
-
     function sha256($string) {
         return hash('sha256', $string);
-    }
-
-    function removeWeirdThings($string) {
-        return preg_replace("/[^a-zA-Z0-9\.\-]+/", "", $string);
     }
 
     //hash('sha256', $_POST["password"])
@@ -59,51 +42,38 @@
         }
     }
 
+    /* removing from db */
+    if (isset($_POST["id"]) and is_numeric($_POST["id"])) {
+        $sql_query = "DELETE FROM `rsstorrent`.`web_feed` WHERE `web_feed`.`id` = " . $_POST["id"] . ";";
+        dbquery("DELETE FROM $tableName WHERE id =" . $_POST["id"]);
+        header("Location: add.php");
+        header("Refresh:0; url=add.php");
+    }
+
+
+    //add new entries
+    ?>
+
+    <table>
+        <tr>
+            <td class="magnet">Title: <input id='title' type='text' name='title'><br />Link: <input id='link' type='text' name='link'><br />
+                <input onclick="ajax_magnet();" class='tlacitko' type='button' value='Submit'></td>
+            <td>
+                <div id="drop_file_zone" ondrop="upload_file(event)" ondragover="return false">
+                    <div id="drag_upload_file">
+                        <p>Drop file here</p>
+                        <p><input type="button" value="Select File" onclick="file_explorer();"></p>
+                        <input type="file" id="selectfile">
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+
+    <?php
+    /* show db entries */
     if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
-        add_to_db();
-
-        echo "<form class='tlacitka' method='post' enctype='multipart/form-data'>" . "<table>" . "<tr>" . "<td class='magnet'>" . "Title: <input type='text' name='title'><br/>" . "Link: <input type='text' name='link'><br/>" . "<input class='tlacitko' type='submit' value='Submit'>" . "</td>" . "<td class='torrent'>" . "Select torrent to upload:" . "<input type='file' name='fileToUpload' id='fileToUpload'>" . "<input class='tlacitko' type='submit' value='Upload torrent' name='submiter'>" . "</td>" . "</tr></table></form>";
-
-        /* upload */
-        if (isset($_POST["submiter"])) {
-            $target_dir = "uploads/";
-            if (!file_exists('path/to/directory')) {
-                mkdir($target_dir, 0777, true);
-            }
-            $actualtime = date("Y-m-d--H-i-s");
-            $target_file  = removeWeirdThings(basename($actualtime . "-" . $_FILES["fileToUpload"]["name"]));
-            $uploadOk     = 1;
-            $torrFileType = strtolower(pathinfo($target_dir . $target_file, PATHINFO_EXTENSION));
-            if (isset($_POST["submiter"])) {
-                // Check file size
-                if ($_FILES["fileToUpload"]["size"] > 500000) {
-                    echo "<div class='center'>Sorry, your file is too large.</div>";
-                    $uploadOk = 0;
-                }
-                // Allow certain file formats
-                if ($torrFileType != "torrent") {
-                    echo "<div class='center'>Sorry, only torrent files are allowed.</div>";
-                    $uploadOk = 0;
-                }
-                // Check if $uploadOk is set to 0 by an error
-                if ($uploadOk == 0) {
-                    echo "<div class='center'>Sorry, your file was not uploaded.</div>";
-                    // if everything is ok, try to upload file
-                } else {
-                    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_dir . $target_file)) {
-                        echo "<div class='center'>The file " . htmlspecialchars(basename($_FILES["fileToUpload"]["name"]), ENT_QUOTES, 'UTF-8') . " has been uploaded.</div>";
-                        $_POST["title"] = str_replace(".torrent", "", basename($_FILES["fileToUpload"]["name"]));
-                        $_POST["link"]  = "$linkURL/uploads/" . $target_file;
-                        add_to_db($string, $json_data, $mysqli);
-                    } else {
-                        echo htmlspecialchars($target_dir . $target_file, ENT_QUOTES, 'UTF-8') . "<br>";
-                        echo "<div class='center'>Sorry, there was an error uploading your file.</div>";
-                    }
-                }
-            }
-        }
-
-        /* show db entries */
         echo "<table class='vypis' border='1'>" . "<th>ID</th>" . "<th>Title</th>" . "<th>Link</th>" . "<th>Date</th>" . "<th>Delete</th>";
 
         $res = $db->query("SELECT * FROM $tableName");
@@ -116,29 +86,27 @@
             $link    = htmlspecialchars($data["link"]);
             $pubDate = htmlspecialchars($data["pubDate"]);
 
-            $string =  "<tr><td>" . $id . "</td>\n" .
-                "<td>" . $title . "</td>\n" .
-                "<td title='" . $link . "'>" . substr($data["link"], 0, 40) . "</td>\n" .
-                "<td>" . $pubDate . "</td>\n" .
-                "<td><button type='submit' form='form1' onclick=\"sendID(" . $data["id"] . ")\" value='Submit'>Delete</button></td></tr>\n";
+            $string =  "<tr><td class='center idcol'>" . $id . "</td>\n" .
+                "<td class='center titlecol'>" . $title . "</td>\n" .
+                "<td class='linkcol' title='" . $link . "'>" . substr($data["link"], 0, 40) . "</td>\n" .
+                "<td class='center datecol'>" . $pubDate . "</td>\n" .
+                "<td class='center deletecol'><button type='submit' form='form1' onclick=\"sendID(" . $data["id"] . ")\" value='Submit'>Delete</button></td></tr>\n";
             array_unshift($tmpArray, $string);
         }
         echo implode(" ", $tmpArray);
         echo "</table>";
 
-        echo "<form id='form1'><input type='text' id='id' name='id' value='notsetyet' hidden/></form>
-    \n</body>\n</html>\n";
-
-        /* removing from db */
-        if (isset($_GET["id"]) and is_numeric($_GET["id"])) {
-            $sql_query = "DELETE FROM `rsstorrent`.`web_feed` WHERE `web_feed`.`id` = " . $_GET["id"] . ";";
-            dbquery("DELETE FROM $tableName WHERE id =" . $_GET["id"]);
-            header("Location: add.php");
-            header("Refresh:0; url=add.php");
-        }
+        echo "<form id='form1' method='post'><input type='text' id='id' name='id' value='notsetyet' hidden/></form>
+                \n</body>\n</html>\n";
     } else {
         echo '<form action="" method="post" id="frmLogin">
-        <div>Password: <input name="password" type="password" value="" class="input-field"></div> 
-        <div><input type="submit" name="login" value="Login" class="form-submit-button"></div>      
-    </form>';
+                <div>Password: <input name="password" type="password" value="" class="input-field"></div> 
+                <div><input type="submit" name="login" value="Login" class="form-submit-button"></div>      
+                </form>';
     }
+
+    ?>
+
+</body>
+
+</html>

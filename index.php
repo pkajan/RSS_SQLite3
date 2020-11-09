@@ -10,7 +10,7 @@ if (file_exists($filename)) {
     $pageTitle  = $json_data['pageTitle'];
     $db         = new SQLite3($dbFileName);
 
-    $db->exec("CREATE TABLE $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
+    $db->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
 
     header("Content-type: text/xml");
     echo "<?xml version='1.0' encoding='UTF-8'?>
@@ -30,7 +30,7 @@ if (file_exists($filename)) {
     $res = $db->query("SELECT * FROM $tableName");
     while ($data = $res->fetchArray()) {
         $title   = htmlspecialchars($data["title"]);
-        $link    = htmlspecialchars($data["link"]);
+        $link    = htmlspecialchars_decode($data["link"]);
         $pubDate = htmlspecialchars($data["pubDate"]);
 
         $string = "<item>

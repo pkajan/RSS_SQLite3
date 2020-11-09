@@ -12,16 +12,6 @@ table{
     width: 40%;
 }
 
-form.tlacitka, table.tlacitka{
-    margin: auto;
-    width: 100%;
-}
-input[type=file] {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 250px;
-}
 .vypis{
     margin-top: 15px;
 }
@@ -30,6 +20,27 @@ input[type=file] {
     margin: auto;
     width: 50%;
     text-align: center;
+}
+
+.idcol{
+    width: 50px;
+}
+
+.linkcol{
+    width: 40px;
+    overflow-wrap:break-word;
+    word-wrap: break-word;
+}
+
+.deletecol{
+    width: 50px;
+}
+
+.datecol{
+    width: 150px;
+}
+.titlecol{
+    width: 150px;
 }
 
 .tlacitko{
@@ -42,48 +53,24 @@ input[type=file] {
     width: 70%;
 }
 
-/* responsive part */
-@media
-only screen and (max-width: 1500px) {
+#drop_file_zone {
+    background-color: green;
+    border: #999 5px dashed;
+    width: 290px;
+    height: 50px;
+    padding: 8px;
+    font-size: 18px;
+}
 
-    input[type=text],input[type=file],input[type=submit]{
-        font-size:24px;
-    }
-    input[type=file]{
-        white-space: pre-line; /* collapse WS, preserve LB */
-    }
-    html, body {
-        max-width: 100%;
-        overflow-x: hidden;
-        word-break: initial;
-    }
- /*   table, thead, tbody, th, td, tr {
-        display: block;
-      }
-  thead tr {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
-  tr { border: 1px solid #ccc; }
-  td {
-    border: none;
-    border-bottom: 1px solid #eee;
-    position: relative;
-    padding-left: 200px;
-    margin-left: 150px;
-  }
-  td:before {
-    position: absolute;
-    top: 12px;
-    left: 6px;
-    width: 200px;
-    padding-right: 40px;
-    white-space: nowrap;
-    margin-left: -150px;
-  }
-  td:nth-of-type(1):before { content: "Option"; }
-  td:nth-of-type(2):before { content: "Description"; }
-  td:nth-of-type(3):before { content: "Type"; }
-  td:nth-of-type(4):before { content: "Default";}*/
+#drag_upload_file {
+  width:50%;
+  margin:0 auto;
+}
+
+#drag_upload_file p {
+  text-align: center;
+}
+
+#drag_upload_file #selectfile {
+  display: none;
 }
