@@ -13,6 +13,7 @@
 <body>
 
     <?php
+    include('function.php');
     session_start();
 
     $json_data  = json_decode(file_get_contents("settings.json"), true);
@@ -22,15 +23,6 @@
     $db         = new SQLite3($dbFileName);
     $db->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
     /* will create empty table, if doesnt exist */
-
-    function dbquery($string) {
-        global $db;
-        $db->exec("$string");
-    }
-
-    function sha256($string) {
-        return hash('sha256', $string);
-    }
 
     //hash('sha256', $_POST["password"])
     if (!empty($_POST["password"])) {
@@ -45,7 +37,7 @@
     /* removing from db */
     if (isset($_POST["id"]) and is_numeric($_POST["id"])) {
         $sql_query = "DELETE FROM `rsstorrent`.`web_feed` WHERE `web_feed`.`id` = " . $_POST["id"] . ";";
-        dbquery("DELETE FROM $tableName WHERE id =" . $_POST["id"]);
+        dbquery("DELETE FROM $tableName WHERE id =" . $_POST["id"], $db);
         header("Location: add.php");
         header("Refresh:0; url=add.php");
     }
