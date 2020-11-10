@@ -82,3 +82,33 @@ table{
      right:0;
  }
  
+ #uploadsFolder{
+     color: red;
+     position:absolute;
+     top:0;
+     left:0;
+     height: 450px;
+     width: 270px;
+     overflow: scroll;
+     word-wrap: break-word;
+     overflow-x: hidden;
+     padding-top: 25px;
+ }
+
+ #uploadsFolder a{
+     color:yellow;
+ }
+
+ .bold{
+     font-weight: bolder;
+ }
+
+ .stayatplace1{
+    height: 15px;
+    position:fixed;
+    background-color: black;
+    left: 0;
+    top: 0;
+    padding: 5px 5px 5px 5px; 
+ }
+ 

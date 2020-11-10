@@ -72,3 +72,14 @@ function logout() {
         }
     });
 }
+
+function hideme(elementID){
+    if(document.getElementById(elementID).hidden == true){
+        document.getElementById(elementID).hidden = false;
+        document.getElementById("filelist").innerText = "Files (hide):";
+    }else{
+        document.getElementById(elementID).hidden = true;
+        document.getElementById("filelist").innerText = "Files (show):";
+    }
+    
+}

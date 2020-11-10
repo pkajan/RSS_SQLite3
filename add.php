@@ -62,11 +62,7 @@
         </tr>
     </table>
 
-
     <?php
-    if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
-        echo "<script>document.getElementById('addtab').removeAttribute('hidden');</script>";
-    }
     /* show db entries */
     if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
         echo "<table class='vypis' border='1'>" . "<th>ID</th>" . "<th>Title</th>" . "<th>Link</th>" . "<th>Date</th>" . "<th>Delete</th>";
@@ -102,6 +98,27 @@
 
     ?>
     <input id="button" type="button" value="Logout" onclick="logout();">
+    <div id="uploadsSide" hidden>
+        <p id="uploadsFolder" hidden></p>
+        <p id="filelist" class="bold stayatplace1" onclick="hideme('uploadsFolder'); return false;" title="Hide on click">Files (show):</p>
+    </div>
+    <?php
+    if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
+        echo "<script>document.getElementById('addtab').removeAttribute('hidden');document.getElementById('uploadsSide').removeAttribute('hidden');</script>";
+
+
+        $directory = getcwd() . '/uploads';
+        $scanned_directory = array_diff(scandir($directory), array('..', '.'));
+        $innerHTML = "<span id=\'linkz\'>";
+        foreach ($scanned_directory as $value) {
+            $innerHTML .=  "<a href=\"" . $linkURL . "\/uploads\/" . $value . "\">$value</a><hr>";
+        }
+
+        if (count($scanned_directory) > 0) {
+            echo "<script>document.getElementById('uploadsFolder').innerHTML = '" . $innerHTML . "</span>';</script>";
+        }
+    }
+    ?>
 </body>
 
 </html>
