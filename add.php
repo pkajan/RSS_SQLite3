@@ -17,9 +17,10 @@
     session_start();
 
     $json_data  = json_decode(file_get_contents("settings.json"), true);
-    $dbFileName = mysql_real_escape_string($json_data['dbFileName']);
-    $tableName  = mysql_real_escape_string($json_data['tableName']);
-    $linkURL = mysql_real_escape_string($json_data['linkURL']);
+    $dbFileName = $json_data['dbFileName'];
+    $tableName  = $json_data['tableName'];
+    $linkURL    = $json_data['linkURL'];
+
     $db         = new SQLite3($dbFileName);
     $db->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
     /* will create empty table, if doesnt exist */
