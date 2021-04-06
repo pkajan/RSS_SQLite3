@@ -5,7 +5,7 @@ if (file_exists($filename)) {
 
     $json_data  = json_decode(file_get_contents($filename), true);
     $dbFileName = $json_data['dbFileName'];
-    $tableName  = $json_data['tableName'];
+    $tableName  = SQLite3::escapeString($json_data['tableName']);
     $linkURL    = $json_data['linkURL'];
     $pageTitle  = $json_data['pageTitle'];
     $db         = new SQLite3($dbFileName);
