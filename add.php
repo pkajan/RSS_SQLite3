@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ondrop="upload_file(event)" ondragover="return false">
 
 <head>
     <meta charset='UTF-8'>
@@ -11,17 +11,17 @@
 </head>
 
 <body>
-
     <?php
     include('function.php');
     session_start();
-
     $json_data  = json_decode(file_get_contents("settings.json"), true);
     $dbFileName = $json_data['dbFileName'];
-    $tableName  = $json_data['tableName'];
-    $linkURL    = $json_data['linkURL'];
-
     $db         = new SQLite3($dbFileName);
+    $tableName  = $json_data['tableName'];
+    $linkURL    = htmlspecialchars($json_data['linkURL']);
+    $pageTitle  = htmlspecialchars($json_data['pageTitle']);
+
+
     $db->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
     /* will create empty table, if doesnt exist */
 
@@ -50,7 +50,8 @@
     <table id="addtab" hidden>
         <tr>
             <td class="magnet">Title: <input id='title' type='text' name='title'><br />Link: <input id='link' type='text' name='link'><br />
-                <input onclick="ajax_magnet();" class='tlacitko' type='button' value='Submit'></td>
+                <input onclick="ajax_magnet();" class='tlacitko' type='button' value='Submit'>
+            </td>
             <td>
                 <div id="drop_file_zone" ondrop="upload_file(event)" ondragover="return false">
                     <div id="drag_upload_file">
@@ -121,5 +122,4 @@
     }
     ?>
 </body>
-
 </html>
