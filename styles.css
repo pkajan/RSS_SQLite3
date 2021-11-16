@@ -1,114 +1,123 @@
-body{
-    background-color: black;
-    color: white;
-    position: relative;
+
+
+body {
+	background-color: black;
+	color: white;
+	position: relative;
 }
 
-form{
-    margin: auto;
-    width: 40%;
-}
-table{
-    margin: auto;
-    width: 40%;
+form {
+	margin: auto;
+	width: 40%;
 }
 
-.vypis{
-    margin-top: 15px;
+table {
+	margin: auto;
+	width: 40%;
 }
 
-.center{
-    margin: auto;
-    width: 50%;
-    text-align: center;
+.vypis {
+	margin-top: 15px;
 }
 
-.idcol{
-    width: 50px;
+.center {
+	margin: auto;
+	width: 50%;
+	text-align: center;
 }
 
-.linkcol{
-    width: 40px;
-    overflow-wrap:break-word;
-    word-wrap: break-word;
+.idcol {
+	width: 50px;
 }
 
-.deletecol{
-    width: 50px;
+.linkcol {
+	width: 40px;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
 }
 
-.datecol{
-    width: 150px;
-}
-.titlecol{
-    width: 150px;
+.deletecol {
+	width: 50px;
 }
 
-.tlacitko{
-    margin-left:20%; 
+.datecol {
+	width: 150px;
 }
-.torrent{
-    width: 30%;
+
+.titlecol {
+	width: 150px;
 }
-.magnet{
-    width: 70%;
+
+.tlacitko {
+	margin-left: 20%;
+}
+
+.torrent {
+	width: 30%;
+}
+
+.magnet {
+	width: 70%;
 }
 
 #drop_file_zone {
-    background-color: green;
-    border: #999 5px dashed;
-    width: 290px;
-    height: 50px;
-    padding: 8px;
-    font-size: 18px;
+	background-color: green;
+	border: #999 5px dashed;
+	width: 290px;
+	height: 50px;
+	padding: 8px;
+	font-size: 18px;
 }
 
 #drag_upload_file {
-  width:50%;
-  margin:0 auto;
+	width: 50%;
+	margin: 0 auto;
 }
 
 #drag_upload_file p {
-  text-align: center;
+	text-align: center;
 }
 
 #drag_upload_file #selectfile {
-  display: none;
+	display: none;
 }
 
- #button {
-     position:absolute;
-     top:0;
-     right:0;
- }
- 
- #uploadsFolder{
-     color: red;
-     position:absolute;
-     top:0;
-     left:0;
-     height: 450px;
-     width: 270px;
-     overflow: scroll;
-     word-wrap: break-word;
-     overflow-x: hidden;
-     padding-top: 25px;
- }
+#button {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
 
- #uploadsFolder a{
-     color:yellow;
- }
+#uploadsFolder {
+	color: red;
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 450px;
+	width: 270px;
+	overflow: scroll;
+	word-wrap: break-word;
+	overflow-x: hidden;
+	padding-top: 25px;
+}
 
- .bold{
-     font-weight: bolder;
- }
+#uploadsFolder a {
+	color: yellow;
+}
 
- .stayatplace1{
-    height: 15px;
-    position:fixed;
-    background-color: black;
-    left: 0;
-    top: 0;
-    padding: 5px 5px 5px 5px; 
- }
- 
+.bold {
+	font-weight: bolder;
+}
+
+.stayatplace1 {
+	height: 15px;
+	position: fixed;
+	background-color: black;
+	left: 0;
+	top: 0;
+	padding: 5px 5px 5px 5px;
+}
+
+.nodeco {
+	text-decoration: none;
+}

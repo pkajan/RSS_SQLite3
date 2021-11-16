@@ -113,7 +113,7 @@
         $scanned_directory = array_diff(scandir($directory), array('..', '.'));
         $innerHTML = "<span id=\'linkz\'>";
         foreach ($scanned_directory as $value) {
-            $innerHTML .=  "<a href=\"" . $linkURL . "\/uploads\/" . $value . "\">$value</a><hr>";
+            $innerHTML .=  "<a href=\"" . $linkURL . "\/uploads\/" . $value . "\">$value</a>&nbsp;<a class=\"nodeco\" href=\"delete.php?filename=" . $value . "\">❌</a><hr>";
         }
 
         if (count($scanned_directory) > 0) {
