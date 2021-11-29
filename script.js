@@ -34,9 +34,10 @@ function ajax_file_upload(file_obj) {
             processData: false,
             data: form_data,
             success: function (response) {
-                alert(response);
+                var reloadTime = 5000;
+                tempAlert(response, reloadTime - (reloadTime / 5));
                 $('#selectfile').val('');
-                location.reload();//reload page
+                setTimeout(function () { location.reload() }, reloadTime);
             }
         });
     }
@@ -53,8 +54,9 @@ function ajax_magnet() {
         processData: false,
         data: form_data2,
         success: function (response) {
-            alert(response);
-            location.reload();//reload page
+            var reloadTime = 3000;
+            tempAlert(response, reloadTime - (reloadTime / 5));
+            setTimeout(function () { location.reload() }, reloadTime);
         }
     });
 }
@@ -73,13 +75,23 @@ function logout() {
     });
 }
 
-function hideme(elementID){
-    if(document.getElementById(elementID).hidden == true){
+function hideme(elementID) {
+    if (document.getElementById(elementID).hidden == true) {
         document.getElementById(elementID).hidden = false;
         document.getElementById("filelist").innerText = "Files (hide):";
-    }else{
+    } else {
         document.getElementById(elementID).hidden = true;
         document.getElementById("filelist").innerText = "Files (show):";
     }
-    
+
+}
+
+function tempAlert(msg, duration) {
+    var el = document.createElement("div");
+    el.setAttribute("style", "position:absolute;top:2%;left:10%;padding: 20px;background-color:black;color:white");
+    el.innerHTML = msg;
+    setTimeout(function () {
+        el.parentNode.removeChild(el);
+    }, duration);
+    document.body.appendChild(el);
 }
