@@ -1,0 +1,80 @@
+body {
+	overflow: hidden;
+}
+
+.PageHeader {
+	background-color: red;
+}
+
+.PageBodyLeft {
+	background-color: green;
+}
+
+.PageBodyMiddle {
+	background-color: orange;
+}
+
+.PageBodyRight {
+	background-color: blue;
+}
+
+.wordWrap {
+	word-wrap: break-word !important;
+	overflow-wrap: break-word !important;
+}
+
+.padding3 {
+	padding: 3px 3px 3px 3px;
+}
+
+.padding5 {
+	padding: 5px 5px 5px 5px;
+}
+
+.paddingTopBottom5 {
+	margin-top: 10%;
+	width: 60px;
+	height: 300%;
+	text-align: center;
+	align-content: center;
+}
+
+.padding10 {
+	padding: 10px 10px 10px 10px;
+}
+
+.gap3 {
+	gap: 3px;
+}
+
+.gap5 {
+	gap: 5px;
+}
+
+.horizontal-center {
+	text-align: center;
+}
+
+.align-left {
+	text-align: left;
+}
+
+.maxHEIGHT25 {
+	max-height: 40%;
+	min-height: 350px;
+	overflow: scroll;
+	overflow-x: hidden;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.fontSizeLarge {
+	font-size: large;
+}
+
+.center-vertical {
+	align-items: center;
+	display: flex;
+}

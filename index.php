@@ -30,7 +30,7 @@ if (file_exists($filename)) {
     $res = $db->query("SELECT * FROM $tableName");
     while ($data = $res->fetchArray()) {
         $title   = htmlspecialchars($data["title"]);
-        $link    = htmlspecialchars_decode($data["link"]);
+        $link    = ($data["link"]);
         $pubDate = htmlspecialchars($data["pubDate"]);
 
         $string = "<item>
