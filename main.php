@@ -29,7 +29,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
 
 <body class="blue-grey darken-4 white-text">
    <div class="row gap3">
-      <div class="col s5 offset-s1">
+      <div class="col m5 s9 offset-m1">
          <span id="topDIV">
             <?php
             if ($SUCCESS)
@@ -37,7 +37,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
             ?>
          </span>
       </div>
-      <div class="col s5 center-vertical padding3">
+      <div class="col m5 s12 center-vertical padding3">
          <span id="loginDIV">
             <?php
             include 'loginDIV.php';
@@ -47,7 +47,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
    </div>
    <div class="divider"></div>
    <div class="row">
-      <div class="col s2 hide-on-med-and-down maxHEIGHT25 padding5" id="UploadentriesDIV">
+      <div class="col m2 hide-on-med-and-down maxHEIGHT25 padding5" id="UploadentriesDIV">
          <div class="row horizontal-center">
             <div class='col s11 wordWrap align-left'>
                <span class='bold fontSizeLarge'>Uploaded files</span>
@@ -65,7 +65,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
             ?>
          </span>
       </div>
-      <div class="col s9 padding10 maxHEIGHT25" id="DBentriesDIV">
+      <div class="col s12 m9 padding10 maxHEIGHT25" id="DBentriesDIV">
          <div class="row horizontal-center gap5">
             <div class="col s1 bold">ID</div>
             <div class="col s5 bold">Title</div>

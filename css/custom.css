@@ -21,6 +21,7 @@ body {
 .wordWrap {
 	word-wrap: break-word !important;
 	overflow-wrap: break-word !important;
+	overflow: hidden;
 }
 
 .padding3 {
