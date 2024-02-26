@@ -18,7 +18,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
    <title>Add new things into RSS</title>
    <meta charset='UTF-8'>
    <!--Import Google Icon Font-->
-   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
    <!--Import materialize.css-->
    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
    <link type="text/css" rel="stylesheet" href="css/custom.css" media="screen,projection" />
@@ -29,7 +29,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
 
 <body class="blue-grey darken-4 white-text">
    <div class="row gap3">
-      <div class="col m5 s9 offset-m1">
+      <div class="col m5 s9 offset-m2">
          <span id="topDIV">
             <?php
             if ($SUCCESS)

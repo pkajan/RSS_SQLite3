@@ -33,9 +33,11 @@ if ($SUCCESS) {
                 <div class="col s5 m8 wordWrap">
                     <form id="fileUpladator" enctype="multipart/form-data">
                         <input id="fileInput" type="file" name="uploaded_file" hidden>
-                        <a class="waves-effect waves-light btn bold" onclick="document.getElementById(\'fileInput\').click()"><i
-                            class="material-icons">upload</i>
-                            Select File to UPLOAD <i class="material-icons">upload</i></a>
+                        <a class="waves-effect waves-light btn bold" onclick="document.getElementById(\'fileInput\').click()">
+                        <i class="material-icons">upload</i>
+                            Select File to UPLOAD
+                        <i class="material-icons">upload</i>
+                        </a>
                     </form>
                 </div>
             </div>
