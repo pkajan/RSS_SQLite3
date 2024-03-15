@@ -14,7 +14,7 @@ if ($SUCCESS) {
   foreach ($scanned_directory as $value) {
     $scannedDirContent .= "<div class='row horizontal-center card-panel hoverable blue-grey darken-3 padding5'>\n" .
       "<div class='col s11 wordWrap align-left'><a href='{$linkURL}/uploads/{$value}'>{$value}</a></div>\n" .
-      "<div class='col s1 valign-wrapper'><a href='#' class='removeLink' value='{$value}'>❌</a></div></div>\n\n";
+      "<div class='col s1 valign-wrapper'><a href='#' class='removeLink fontSizeLarge padding-left2' value='{$value}'>❌</a></div></div>\n\n";
   }
   if (count($scanned_directory) > 0) {
     echo $scannedDirContent;
