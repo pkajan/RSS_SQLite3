@@ -1,11 +1,11 @@
 <?php
-require_once("functions.php");
+require_once ("functions.php");
 $SUCCESS = FALSE;
 if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
-    $SUCCESS = TRUE;
+  $SUCCESS = TRUE;
 }
 if ($SUCCESS) {
-    echo '
+  echo '
     <div class="row">
         <div class="col s12 m6">
             <form id="linkForm" class="col s6 m12">
@@ -32,7 +32,7 @@ if ($SUCCESS) {
                 </div>
                 <div class="col s5 m8 wordWrap">
                     <form id="fileUpladator" enctype="multipart/form-data">
-                        <input id="fileInput" type="file" name="uploaded_file" hidden>
+                        <input id="fileInput" type="file" name="uploaded_file" multiple hidden>
                         <a class="waves-effect waves-light btn bold" onclick="document.getElementById(\'fileInput\').click()">
                         <i class="material-icons">upload</i>
                             Select File to UPLOAD

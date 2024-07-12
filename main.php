@@ -1,5 +1,5 @@
 <?php
-require_once("functions.php");
+require_once ("functions.php");
 
 $db->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
 /* will create empty table, if doesnt exist */
@@ -18,7 +18,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
    <title>Add new things into RSS</title>
    <meta charset='UTF-8'>
    <!--Import Google Icon Font-->
-  <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
+   <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
    <!--Import materialize.css-->
    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
    <link type="text/css" rel="stylesheet" href="css/custom.css" media="screen,projection" />
@@ -100,6 +100,15 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
       function elementsToReload() {
          reloadContent('showUploads.php', '#showUploads');
          reloadContent('showDBentries.php', '#showDBentries');
+      }
+
+      function sleep(milliseconds) {
+         var start = new Date().getTime();
+         for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds) {
+               break;
+            }
+         }
       }
 
       $(document).ready(function () {
@@ -241,7 +250,12 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
       $('#fileInput').change(function () {
          var form = document.forms["fileUpladator"];
          var formData = new FormData();
-         formData.append('uploaded_file', $(this)[0].files[0]);
+         var fileInput_length = $(this)[0].files.length;
+         if (fileInput_length > 0) {
+            for (var i = 0; i < fileInput_length; i++) {
+               formData.append("uploaded_file[]", $(this)[0].files[i]);
+            }
+         }
 
          $.ajax({
             url: 'uploadFile.php',
@@ -254,20 +268,24 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
                if (response.includes("Sorry")) {
                   alert(response);
                } else {
-                  $.post("addDBentry.php", {
-                     entryName: response,
-                     entryLink: "<?php echo "{$linkURL}/uploads/"; ?>" + response
-                  })
-                     .done(function (response) {
-                        console.log("Response", response);
-                        reloadContent('showDBentries.php', '#showDBentries');
-                        form.reset();
+                  var myArray = response.split(";;;").filter(n => n);
+                  myArray.forEach((response) => {
+                     $.post("addDBentry.php", {
+                        entryName: response,
+                        entryLink: "<?php echo "{$linkURL}/uploads/"; ?>" + response
                      })
-                     .fail(function (xhr, status, error) {
-                        console.error("Error adding entry:", error);
-                     });
-
+                        .done(function (response) {
+                           console.log("Response", response);
+                           reloadContent('showDBentries.php', '#showDBentries');
+                           form.reset();
+                        })
+                        .fail(function (xhr, status, error) {
+                           console.error("Error adding entry:", error);
+                        });
+                     sleep(500);
+                  });
                }
+
                // Handle success response
             },
             error: function (xhr, status, error) {
