@@ -103,7 +103,7 @@ body {
 }
 
 .maxHEIGHT25 {
-	max-height: 40%;
+	max-height: 60%;
 	min-height: 350px;
 	overflow: auto;
 	overflow-x: hidden;
