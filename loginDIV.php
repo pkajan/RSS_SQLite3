@@ -22,7 +22,7 @@ $status = ($SUCCESS) ? "hidden" : "";
       </form>
    </div>
    <div class="col s1 center-vertical">
-      <a class="waves-effect waves-light btn bold loginLogout" id="LOGINsubmit" onclick="submitLoginLogout()">
+      <a class="waves-effect waves-light btn bold filled loginLogout" id="LOGINsubmit" onclick="submitLoginLogout()">
          <?php echo $LoginLogoutBTN ?>
       </a>
    </div>

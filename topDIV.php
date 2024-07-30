@@ -28,12 +28,12 @@ if ($SUCCESS) {
         <div class="col s12 m6 center-vertical">
             <div class="row">
                 <div class="col s4 offset-s1 m4">
-                    <a class="waves-effect waves-light btn bold" onclick="submitForm()">ADD</a>
+                    <a class="waves-effect waves-light btn filled bold" onclick="submitForm()">ADD</a>
                 </div>
                 <div class="col s5 m8 wordWrap">
                     <form id="fileUpladator" enctype="multipart/form-data">
                         <input id="fileInput" type="file" name="uploaded_file" multiple hidden>
-                        <a class="waves-effect waves-light btn bold" onclick="document.getElementById(\'fileInput\').click()">
+                        <a class="waves-effect waves-light btn filled bold" onclick="document.getElementById(\'fileInput\').click()">
                         <i class="material-icons">upload</i>
                             Select File to UPLOAD
                         <i class="material-icons">upload</i>
