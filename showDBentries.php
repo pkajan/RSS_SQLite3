@@ -27,7 +27,7 @@ if ($SUCCESS) {
       "<div class='col s5 padding3 tooltip truncate bold' title='{$title}'>{$title}</div>\n" .
       "<div class='col s3 padding3 truncate tooltip' title='{$link}'>{$link}</div>\n" .
       "<div class='col s2 padding3 truncate horizontal-center' title='{$pubDate}'>{$pubDate}</div>\n" .
-      "<div class='col s1 padding3 horizontal-center'><a href='#' class='removeDBentry waves-effect waves-light btn' value='{$data["id"]}'>Delete</a></div></div>\n\n";
+      "<div class='col s1 padding3 horizontal-center'><a href='#' class='removeDBentry waves-effect waves-light btn filled bold' value='{$data["id"]}'>Delete</a></div></div>\n\n";
     array_unshift($tmpArray, $string);
   }
   echo implode(" ", $tmpArray);
