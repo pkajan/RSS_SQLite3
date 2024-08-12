@@ -25,6 +25,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
    <!--Let browser know website is optimized for mobile-->
    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
    <script src="js/jquery-3.7.1.min.js"></script>
+   <script src="js/custom.js"></script>
 </head>
 
 <body class="blue-grey darken-4 white-text">

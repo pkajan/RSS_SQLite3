@@ -19,7 +19,7 @@ if ($SUCCESS) {
                 <div class="row padding10">
                     <div id="linkForm_link_DIV" class="input-field outlined col s12 m12" style="margin: 0 4px;">
                         <i class="material-icons suffix">link</i>
-                        <input id="linkForm_link" class="validate" type="text" placeholder=" " required>
+                        <input id="linkForm_link" class="validate" type="text" placeholder=" " onchange="addMagnetName()" required>
                         <label for="linkForm_link">Magnet/URL</label>
                     </div>
                 </div>
