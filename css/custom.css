@@ -104,9 +104,10 @@ body {
 
 .maxHEIGHT25 {
 	max-height: 60%;
-	min-height: 350px;
+	min-height: 750px;
 	overflow: auto;
 	overflow-x: hidden;
+	overflow-y: scroll;
 }
 
 .bold {
