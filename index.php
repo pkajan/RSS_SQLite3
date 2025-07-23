@@ -23,21 +23,21 @@ if (file_exists($filename)) {
             <title>NULL</title>
             <link></link>
             <pubDate>Mon, 01 Jan 2020 00:00:00 +0200</pubDate>
-            </item>";
+            </item>\n";
 
     $tmpArray = [];
 
     $res = $db->query("SELECT * FROM $tableName");
     while ($data = $res->fetchArray()) {
         $title   = htmlspecialchars($data["title"]);
-        $link    = ($data["link"]);
+        $link    = htmlspecialchars($data["link"]);
         $pubDate = htmlspecialchars($data["pubDate"]);
 
         $string = "<item>
         <title>$title</title>
         <link>$link</link>
         <pubDate>$pubDate</pubDate>
-    </item>";
+    </item>\n";
         array_unshift($tmpArray, $string);
     }
     echo implode(" ", $tmpArray);
