@@ -48,14 +48,14 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
    </div>
    <div class="divider"></div>
    <div class="row">
-      <div class="col m2 hide-on-med-and-down maxHEIGHT25 padding5" id="UploadentriesDIV">
+      <div class="col l3 hide-on-med-and-down maxHEIGHT25 padding5" id="UploadentriesDIV">
          <div class="row horizontal-center">
-            <div class='col s11 wordWrap align-left'>
+            <div class='col l11 wordWrap align-left'>
                <span class='bold fontSizeLarge'>Uploaded files</span>
             </div>
          </div>
          <div class="row horizontal-center">
-            <div class='col s11 wordWrap align-left'>
+            <div class='col l11 wordWrap align-left'>
                &nbsp;
             </div>
          </div>

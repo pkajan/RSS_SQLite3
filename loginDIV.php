@@ -11,7 +11,7 @@ $status = ($SUCCESS) ? "hidden" : "";
 ?>
 
 <div class="row">
-   <div class="col s6 offset-s5">
+   <div class="col s4 offset-s7">
       <form id="loginForm" class="col s12">
          <div class="row padding10">
             <div id="" class="input-field outlined col s12" style="margin: 0 4px;" <?php echo $status; ?>>
