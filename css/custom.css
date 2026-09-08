@@ -127,3 +127,15 @@ body {
     font-size: 0.75rem;
 }
 
+.input-field.outlined {
+  position: relative;
+}
+
+.input-field.outlined input:focus + label,
+.input-field.outlined input:not(:placeholder-shown) + label {
+  transform: translateY(-10px) scale(0.8);
+}
+
+.card-panel.row .wordWrap a {
+    color: #00CADB !important;
+}
