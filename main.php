@@ -1,14 +1,8 @@
 <?php
-require_once ("functions.php");
+require_once("functions.php");
 
-$db->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
+getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
 /* will create empty table, if doesnt exist */
-
-session_start();
-$SUCCESS = FALSE;
-if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
-  $SUCCESS = TRUE;
-}
 
 ?>
 <!DOCTYPE html>
@@ -21,10 +15,11 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
    <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
    <!--Import materialize.css-->
    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+   <link type="text/css" rel="stylesheet" href="css/materialize.colors.min.css" media="screen,projection" />
    <link type="text/css" rel="stylesheet" href="css/custom.css" media="screen,projection" />
    <!--Let browser know website is optimized for mobile-->
    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <script src="js/jquery-3.7.1.min.js"></script>
+   <script src="js/jquery-4.0.0.min.js"></script>
    <script src="js/custom.js"></script>
 </head>
 
@@ -33,8 +28,8 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
       <div class="col m5 s9 offset-m2">
          <span id="topDIV">
             <?php
-            if ($SUCCESS)
-              include 'topDIV.php';
+            if (isLoggedIn())
+               include 'topDIV.php';
             ?>
          </span>
       </div>
@@ -61,8 +56,8 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
          </div>
          <span id="showUploads">
             <?php
-            if ($SUCCESS)
-              include 'showUploads.php';
+            if (isLoggedIn())
+               include 'showUploads.php';
             ?>
          </span>
       </div>
@@ -76,8 +71,8 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
          </div>
          <span id="showDBentries">
             <?php
-            if ($SUCCESS)
-              include 'showDBentries.php';
+            if (isLoggedIn())
+               include 'showDBentries.php';
             ?>
          </span>
       </div>
@@ -89,10 +84,10 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
          $.ajax({
             url: url,
             type: 'GET',
-            success: function (response) {
+            success: function(response) {
                $(targetElement).html(response);
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                console.error(xhr.responseText);
             }
          });
@@ -112,7 +107,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
          }
       }
 
-      $(document).ready(function () {
+      $(document).ready(function() {
          let reloadTimeInMilliseconds = <?php echo $reloadTimeInMilliseconds ?>;
 
          // Function to handle click event on remove links
@@ -120,18 +115,19 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
             e.preventDefault(); // Prevent the default action of the link
 
             // Retrieve the value of data-filename attribute
-            var fileName = $(this)[0].attributes[2].value;
+            //var fileName = $(this)[0].attributes[2].value;
+            var fileName = $(this).data("filename");
 
             // Send AJAX request to remove the file
             $.post("removeFile.php", {
-               fileName: fileName
-            })
-               .done(function (response) {
+                  fileName: fileName
+               })
+               .done(function(response) {
                   // Handle successful response here
                   console.log("Response", response);
                   reloadContent('showUploads.php', '#showUploads');
                })
-               .fail(function (xhr, status, error) {
+               .fail(function(xhr, status, error) {
                   // Handle errors here
                   console.error("(handleRemoveLinkClick) Error removing file:", error);
                });
@@ -145,14 +141,14 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
 
             // Send AJAX request to remove the file
             $.post("removeDBentry.php", {
-               id: entryID
-            })
-               .done(function (response) {
+                  id: entryID
+               })
+               .done(function(response) {
                   // Handle successful response here
                   console.log("Response", response);
                   reloadContent('showDBentries.php', '#showDBentries');
                })
-               .fail(function (xhr, status, error) {
+               .fail(function(xhr, status, error) {
                   // Handle errors here
                   console.error("(handleRemoveDBentryClick) Error removing file:", error);
                });
@@ -162,16 +158,16 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
          // Attach click event handler to elements with class .removeLink
          $(document).on('click', '.removeLink', handleRemoveLinkClick);
          $(document).on('click', '.removeDBentry', handleRemoveDBentryClick);
-         $(document).on("keypress", "input", function (e) {
+         $(document).on("keypress", "input", function(e) {
             if (e.which == 13) {
-               event.preventDefault();
+               e.preventDefault();
                jQuery(this).blur();
                jQuery('#LOGINsubmit').focus().click();
             }
          });
 
          // Reload content initially and every X seconds for uploads
-         setInterval(function () {
+         setInterval(function() {
             elementsToReload();
          }, reloadTimeInMilliseconds);
       });
@@ -179,17 +175,17 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
       // ADD TO DB
       function addToDB(entryName, entryLink) {
          $.post("addDBentry.php", {
-            entryName: entryName,
-            entryLink: entryLink
-         })
-            .done(function (response) {
+               entryName: entryName,
+               entryLink: entryLink
+            })
+            .done(function(response) {
                console.log("Response", response);
                reloadContent('showDBentries.php', '#showDBentries');
                form.reset();
                nameErrorDiv.classList.remove("error");
                linkErrorDiv.classList.remove("error");
             })
-            .fail(function (xhr, status, error) {
+            .fail(function(xhr, status, error) {
                console.error("(addToDB) Error adding entry:", error);
             });
       }
@@ -205,17 +201,17 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
 
          if (form.checkValidity()) {
             $.post("addDBentry.php", {
-               entryName: entryName,
-               entryLink: entryLink
-            })
-               .done(function (response) {
+                  entryName: entryName,
+                  entryLink: entryLink
+               })
+               .done(function(response) {
                   console.log("Response", response);
                   reloadContent('showDBentries.php', '#showDBentries');
                   form.reset();
                   nameErrorDiv.classList.remove("error");
                   linkErrorDiv.classList.remove("error");
                })
-               .fail(function (xhr, status, error) {
+               .fail(function(xhr, status, error) {
                   console.error("(submitForm) Error adding entry:", error);
                });
          } else {
@@ -225,31 +221,11 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
          }
       }
 
-      // LOGIN
-      function submitLoginLogout() {
-         var form = document.forms["loginForm"];
-         var LOGINpassword = form["LOGINpassword"].value;
 
-         $.post("login.php", {
-            LOGINpassword: LOGINpassword
-         })
-            .done(function (response) {
-               console.log("Response", response);
-               form.reset();
-               setTimeout(function () {
-                  elementsToReload();
-                  reloadContent('loginDIV.php', '#loginDIV');
-                  reloadContent('topDIV.php', '#topDIV');
-               }, 1000);
-            })
-            .fail(function (xhr, status, error) {
-               console.error("(submitLoginLogout) Error adding entry:", error);
-            });
-      }
 
       // FILE UPLOAD
-      $('#fileInput').change(function () {
-         var form = document.forms["fileUpladator"];
+      $('#fileInput').change(function() {
+         var form = document.forms["fileUploader"];
          var formData = new FormData();
          var fileInput_length = $(this)[0].files.length;
          if (fileInput_length > 0) {
@@ -264,7 +240,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
             data: formData,
             processData: false,
             contentType: false,
-            success: function (response) {
+            success: function(response) {
                console.log("Response", response);
                if (response.includes("Sorry")) {
                   alert(response);
@@ -272,24 +248,24 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
                   var myArray = response.split(";;;").filter(n => n);
                   myArray.forEach((response) => {
                      $.post("addDBentry.php", {
-                        entryName: response,
-                        entryLink: "<?php echo "{$linkURL}/uploads/"; ?>" + response
-                     })
-                        .done(function (response) {
+                           entryName: response,
+                           entryLink: "<?php echo "{$linkURL}/uploads/"; ?>" + response
+                        })
+                        .done(function(response) {
                            console.log("Response", response);
                            reloadContent('showDBentries.php', '#showDBentries');
                            form.reset();
                         })
-                        .fail(function (xhr, status, error) {
+                        .fail(function(xhr, status, error) {
                            console.error("Error adding entry:", error);
                         });
-                     sleep(500);
+                     //sleep(500);
                   });
                }
 
                // Handle success response
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                console.error(xhr.responseText);
                // Handle error response
             }
@@ -300,7 +276,7 @@ if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_
       var tooltipElements = document.querySelectorAll('.tooltip');
 
       // Iterate over each element to set tooltip content
-      tooltipElements.forEach(function (element) {
+      tooltipElements.forEach(function(element) {
          var innerHTML = element.textContent.replace(/\s+/g, ' ');
          element.setAttribute('title', innerHTML);
       });

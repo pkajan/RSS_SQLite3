@@ -1,11 +1,8 @@
 <?php
-require_once ("functions.php");
-$SUCCESS = FALSE;
-if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
-  $SUCCESS = TRUE;
-}
-if ($SUCCESS) {
-  echo '
+require_once("functions.php");
+
+if (isLoggedIn()) {
+    echo '
     <div class="row">
         <div class="col s12 m6">
             <form id="linkForm" class="col s6 m12">
@@ -31,7 +28,7 @@ if ($SUCCESS) {
                     <a class="waves-effect waves-light btn filled bold" onclick="submitForm()">ADD</a>
                 </div>
                 <div class="col s5 m8 wordWrap">
-                    <form id="fileUpladator" enctype="multipart/form-data">
+                    <form id="fileUploader" enctype="multipart/form-data">
                         <input id="fileInput" type="file" name="uploaded_file" multiple hidden>
                         <a class="waves-effect waves-light btn filled bold upload-btn-text" onclick="document.getElementById(\'fileInput\').click()">
                         <i class="material-icons">upload</i>
@@ -44,5 +41,3 @@ if ($SUCCESS) {
         </div>
     </div>';
 }
-?>
-

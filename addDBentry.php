@@ -1,32 +1,51 @@
 <?php
-function dbquery($entryName, $entryLink, $pubDate, $db, $table) {
-    $stmt = $db->prepare("INSERT INTO $table (title, link, pubDate) VALUES (:title, :link, :pubDate)");
+require_once("functions.php");
+
+// 1. Kontrola prihlásenia
+if (!isLoggedIn()) {
+    http_response_code(403);
+    echo "Unauthorized access";
+    exit;
+}
+
+function dbqueryAdd($entryName, $entryLink, $pubDate, $tableName) {
+    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
+        http_response_code(400);
+        echo "Invalid table name";
+        exit;
+    }
+
+    $stmt = getDB()->prepare("INSERT INTO {$tableName} (title, link, pubDate) VALUES (:title, :link, :pubDate)");
     $stmt->bindValue(':title', $entryName, SQLITE3_TEXT);
     $stmt->bindValue(':link', $entryLink, SQLITE3_TEXT);
     $stmt->bindValue(':pubDate', $pubDate, SQLITE3_TEXT);
-    $stmt->execute();
+
+    return $stmt->execute();
 }
 
-if (!empty($_POST)) {
-    $entryName = $_POST["entryName"];
-    $entryLink = $_POST["entryLink"];
-    $json_data = json_decode(file_get_contents("settings.json"), TRUE);
-    $dbFileName = $json_data['dbFileName'];
-    $dbTableName = $json_data['tableName'];
-    $db = new SQLite3($dbFileName);
+if (!empty($_POST["entryName"]) && !empty($_POST["entryLink"])) {
+    $entryName = trim($_POST["entryName"]);
+    $entryLink = trim($_POST["entryLink"]);
 
-    /* add db */
+    $json_data = json_decode(@file_get_contents("settings.json"), TRUE);
+    $dbTableName = $json_data['tableName'] ?? '';
+
+    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $dbTableName)) {
+        http_response_code(400);
+        echo "Invalid table name configuration";
+        exit;
+    }
+
     $pubDate = date("D, j M Y G:i:s TP");
 
-    dbquery($entryName, $entryLink, $pubDate, $db, $dbTableName);
-
-    echo "Entry added: " . htmlspecialchars($entryName) . "\nMagnet: " . htmlspecialchars($entryLink);
-
-    //DEBUG 
-    /*$filenameR = 'DEBUG_data.txt';
-    $file = fopen($filenameR, 'a');
-    $queryString = "AddedDBentry: {$entryName} | {$entryLink}\n";
-    fwrite($file, $queryString);
-    fclose($file);*/
+    if (dbqueryAdd($entryName, $entryLink, $pubDate, $dbTableName)) {
+        echo "Entry added: " . htmlspecialchars($entryName, ENT_QUOTES, 'UTF-8') .
+            "\nMagnet: " . htmlspecialchars($entryLink, ENT_QUOTES, 'UTF-8');
+    } else {
+        http_response_code(500);
+        echo "Failed to add entry to database";
+    }
+} else {
+    http_response_code(400);
+    echo "Missing required parameters";
 }
-?>

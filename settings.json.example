@@ -3,6 +3,7 @@
     "tableName": "webfeed",
     "linkURL": "https://myhosting.eu",
     "pageTitle": "my RSS",
-    "reloadTimeInMilliseconds": "10000",
-    "pwd_hash":"sha256_hash_of_your_password"
+    "reloadTimeInMilliseconds": 10000,
+    "maxFileSizeLimit": 5000000,
+    "pwd_hash": "hash_of_your_password"
 }

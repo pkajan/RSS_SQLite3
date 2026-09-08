@@ -1,46 +1,42 @@
 <?php
 require_once("functions.php");
 
-$json_data = json_decode(file_get_contents("settings.json"), TRUE);
-$LOGINpassword = NULL;
 if (!empty($_POST)) {
-  if (isset($_COOKIE["member_login"]) && $_COOKIE["member_login"] == sha256($json_data['pwd_hash'])) {
-    //LOGOUT
-    $arr_cookie_options = array(
-      'expires' => time() * (-1),
-      'secure' => TRUE,     // or false
-      'httponly' => FALSE,    // or false
-      'samesite' => 'None' // None || Lax  || Strict
-    );
-    setcookie('member_login', "", $arr_cookie_options);
-    echo "Odhlasenie";
-  }
-  else {
-    //LOGIN
-    if (!empty($_POST["LOGINpassword"])) {
-      $LOGINpassword = $_POST["LOGINpassword"];
+    $action = $_POST['action'] ?? '';
 
-      if ($json_data['pwd_hash'] == sha256($LOGINpassword)) {
-        $arr_cookie_options = array(
-          'expires' => time() + (10 * 365 * 24 * 60 * 60),
-          'secure' => TRUE,     // or false
-          'httponly' => FALSE,    // or false
-          'samesite' => 'None' // None || Lax  || Strict
-        );
+    // Spoločné bezpečnostné nastavenia pre cookies (pridaná path)
+    $cookieOptions = [
+        'path'     => '/',    // Platnosť pre celú doménu
+        'secure'   => true,   // Len cez HTTPS
+        'httponly' => true,   // Zákaz prístupu cez JS (ochrana pred XSS)
+        'samesite' => 'Lax'   // Ochrana pred CSRF
+    ];
 
-        setcookie('member_login', sha256(sha256($LOGINpassword)), $arr_cookie_options);
-        echo "true";
-      }
-      else {
-        echo "Invalid Login";
-      }
+    // Overenie prihlásenia (porovnávame string s stringom)
+    $isLoggedIn = isset($_COOKIE["member_login"]) &&
+        $pwdHashControl !== '' &&
+        hash_equals($_COOKIE["member_login"], md5($pwdHashControl));
+
+    // Explicitné odhlásenie
+    if ($action === 'logout') {
+        $cookieOptions['expires'] = time() - 3600;
+        setcookie('member_login', '', $cookieOptions);
+        unset($_COOKIE['member_login']);
+        echo "Odhlasenie";
+        exit;
     }
-  }
 
+    // PRIHLÁSENIE
+    if (!empty($_POST["LOGINpassword"])) {
+        $inputPassword = $_POST["LOGINpassword"];
 
-  //DEBUG
-  /*$filenameR = 'DEBUG_data.txt';
-  $file = fopen($filenameR, 'a');
-  $queryString = "{$LOGINpassword}\n";
-  fwrite($file, $queryString);*/
+        if ($pwdHashControl !== '' && password_verify($inputPassword, $pwdHashControl)) {
+            $cookieOptions['expires'] = time() + (30 * 86400); // 30 dní
+
+            setcookie('member_login', md5($pwdHashControl), $cookieOptions);
+            echo "true";
+        } else {
+            echo "Invalid Login";
+        }
+    }
 }

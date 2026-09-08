@@ -1,7 +1,5 @@
 <?php
-function dbquery($string, $db) {
-  $db->exec("$string");
-}
+require_once("functions.php");
 
 if (!empty($_POST)) {
   $entryID = $_POST["id"];
@@ -11,8 +9,14 @@ if (!empty($_POST)) {
   $db = new SQLite3($dbFileName);
   /* removing from db */
   if (isset($entryID) and is_numeric($entryID)) {
-    $sql_query = "DELETE FROM `rsstorrent`.`$dbTableName` WHERE `$dbTableName`.`id` = " . $entryID . ";";
-    dbquery("DELETE FROM $dbTableName WHERE id =" . $entryID, $db);
+    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $dbTableName)) {
+      http_response_code(400);
+      echo "Invalid table name";
+      exit;
+    }
+    $stmt = getDB()->prepare("DELETE FROM $dbTableName WHERE id = :id");
+    $stmt->bindValue(':id', $entryID, SQLITE3_INTEGER);
+    $stmt->execute();
     echo "Entry with ID {$entryID} was deleted";
   }
 
