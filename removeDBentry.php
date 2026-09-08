@@ -1,12 +1,19 @@
 <?php
 require_once("functions.php");
 
+// 1. Ochrana pred neoprávneným prístupom
+if (!isLoggedIn()) {
+    http_response_code(403);
+    echo "Unauthorized access";
+    exit;
+}
+
 if (!empty($_POST)) {
   $entryID = $_POST["id"];
   $json_data = json_decode(file_get_contents("settings.json"), TRUE);
   $dbFileName = $json_data['dbFileName'];
   $dbTableName = $json_data['tableName'];
-  $db = new SQLite3($dbFileName);
+
   /* removing from db */
   if (isset($entryID) and is_numeric($entryID)) {
     if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $dbTableName)) {
