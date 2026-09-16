@@ -20,8 +20,9 @@ function getDB() {
 }
 
 function isLoggedIn() {
-    global $pwdHashControl;
-    if (isset($_COOKIE["member_login"]) && hash_equals($_COOKIE["member_login"], md5($pwdHashControl))) {
-        return true;
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
     }
+
+    return !empty($_SESSION['is_logged_in']);
 }
