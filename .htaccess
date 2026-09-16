@@ -3,3 +3,4 @@ RewriteCond %{HTTP:X-Forwarded-Proto} =http
 RewriteRule ^.*$ https://%{HTTP:Host}%{REQUEST_URI} [L,R=permanent]
 
 RewriteRule ^(settings.json) - [F,L,NC]
+RewriteRule ^(database.db) - [F,L,NC]

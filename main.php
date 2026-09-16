@@ -7,8 +7,8 @@ if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
     exit;
 }
     
-getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
-/* will create empty table, if doesnt exist */
+// Vytvorenie tabuľky ak neexistuje
+getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (500) NOT NULL, link VARCHAR (4500) NOT NULL, pubDate DATETIME NOT NULL)");
 
 ?>
 <!DOCTYPE html>

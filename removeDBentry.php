@@ -9,7 +9,7 @@ if (!isLoggedIn()) {
 }
 
 if (!empty($_POST)) {
-  $entryID = $_POST["id"];
+  $entryID = $_POST['id'] ?? '';
 
   /* removing from db */
   if (isset($entryID) and is_numeric($entryID)) {
