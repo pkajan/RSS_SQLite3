@@ -36,7 +36,7 @@ if (!empty($_POST["entryName"]) && !empty($_POST["entryLink"])) {
         exit;
     }
 
-    $pubDate = date("D, j M Y G:i:s TP");
+    $pubDate = date(DATE_RSS);
 
     if (dbqueryAdd($entryName, $entryLink, $pubDate, $dbTableName)) {
         echo "Entry added: " . htmlspecialchars($entryName, ENT_QUOTES, 'UTF-8') .

@@ -25,16 +25,13 @@ if (file_exists($filename)) {
     echo "<title>{$pageTitle}</title>\n";
     echo "<description>Torrents links to download</description>\n";
     echo "<link>{$linkURL}</link>\n";
-    echo "<item>\n";
-    echo "  <title>NULL</title>\n";
-    echo "  <link></link>\n";
-    echo "  <pubDate>Mon, 01 Jan 2020 00:00:00 +0200</pubDate>\n";
-    echo "</item>\n";
 
-    // Záznamy načítame v obrátenom poradí priamo z DB (O(1) réžia v PHP)
+    // Záznamy načítame v obrátenom poradí priamo z DB
     $res = getDB()->query("SELECT * FROM {$tableName} ORDER BY id DESC");
+    $hasItems = false;
 
     while ($data = $res->fetchArray(SQLITE3_ASSOC)) {
+        $hasItems = true;
         $title   = htmlspecialchars($data["title"], ENT_QUOTES, 'UTF-8');
         $link    = htmlspecialchars($data["link"], ENT_QUOTES, 'UTF-8');
         $pubDate = htmlspecialchars($data["pubDate"], ENT_QUOTES, 'UTF-8');
@@ -43,6 +40,15 @@ if (file_exists($filename)) {
         echo "  <title>{$title}</title>\n";
         echo "  <link>{$link}</link>\n";
         echo "  <pubDate>{$pubDate}</pubDate>\n";
+        echo "</item>\n";
+    }
+
+    // Ak sa z DB nenačítal ani jeden riadok, vypíšeme výpredvolený "NULL" item
+    if (!$hasItems) {
+        echo "<item>\n";
+        echo "  <title>NULL</title>\n";
+        echo "  <link></link>\n";
+        echo "  <pubDate>Mon, 01 Jan 2020 00:00:00 +0200</pubDate>\n";
         echo "</item>\n";
     }
 

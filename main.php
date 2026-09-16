@@ -1,6 +1,12 @@
 <?php
 require_once("functions.php");
 
+if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
+    http_response_code(400);
+    echo "Invalid table name";
+    exit;
+}
+    
 getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (250) NOT NULL, link VARCHAR (2500) NOT NULL, pubDate DATETIME NOT NULL)");
 /* will create empty table, if doesnt exist */
 
@@ -11,8 +17,6 @@ getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQ
 <head>
    <title>Add new things into RSS</title>
    <meta charset='UTF-8'>
-   <!--Import Google Icon Font-->
-   <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
    <!--Import materialize.css-->
    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
    <link type="text/css" rel="stylesheet" href="css/materialize.colors.min.css" media="screen,projection" />
@@ -98,64 +102,39 @@ getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQ
          reloadContent('showDBentries.php', '#showDBentries');
       }
 
-      function sleep(milliseconds) {
-         var start = new Date().getTime();
-         for (var i = 0; i < 1e7; i++) {
-            if ((new Date().getTime() - start) > milliseconds) {
-               break;
-            }
-         }
-      }
-
       $(document).ready(function() {
-         let reloadTimeInMilliseconds = <?php echo $reloadTimeInMilliseconds ?>;
+         let reloadTimeInMilliseconds = <?php echo (int)($reloadTimeInMilliseconds ?? 10000); ?>;
 
          // Function to handle click event on remove links
          function handleRemoveLinkClick(e) {
-            e.preventDefault(); // Prevent the default action of the link
-
-            // Retrieve the value of data-filename attribute
-            //var fileName = $(this)[0].attributes[2].value;
+            e.preventDefault();
             var fileName = $(this).data("filename");
 
-            // Send AJAX request to remove the file
-            $.post("removeFile.php", {
-                  fileName: fileName
-               })
+            $.post("removeFile.php", { fileName: fileName })
                .done(function(response) {
-                  // Handle successful response here
                   console.log("Response", response);
                   reloadContent('showUploads.php', '#showUploads');
                })
                .fail(function(xhr, status, error) {
-                  // Handle errors here
                   console.error("(handleRemoveLinkClick) Error removing file:", error);
                });
          }
 
          function handleRemoveDBentryClick(e) {
-            e.preventDefault(); // Prevent the default action of the link
+            e.preventDefault();
+            var entryID = $(this).data("id");
 
-            // Retrieve the value of data-filename attribute
-            var entryID = $(this)[0].attributes[2].value;
-
-            // Send AJAX request to remove the file
-            $.post("removeDBentry.php", {
-                  id: entryID
-               })
+            $.post("removeDBentry.php", { id: entryID })
                .done(function(response) {
-                  // Handle successful response here
                   console.log("Response", response);
                   reloadContent('showDBentries.php', '#showDBentries');
                })
                .fail(function(xhr, status, error) {
-                  // Handle errors here
                   console.error("(handleRemoveDBentryClick) Error removing file:", error);
                });
          }
 
-
-         // Attach click event handler to elements with class .removeLink
+         // Event handlers
          $(document).on('click', '.removeLink', handleRemoveLinkClick);
          $(document).on('click', '.removeDBentry', handleRemoveDBentryClick);
          $(document).on("keypress", "input", function(e) {
@@ -166,7 +145,7 @@ getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQ
             }
          });
 
-         // Reload content initially and every X seconds for uploads
+         // Interval reload
          setInterval(function() {
             elementsToReload();
          }, reloadTimeInMilliseconds);
@@ -181,9 +160,6 @@ getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQ
             .done(function(response) {
                console.log("Response", response);
                reloadContent('showDBentries.php', '#showDBentries');
-               form.reset();
-               nameErrorDiv.classList.remove("error");
-               linkErrorDiv.classList.remove("error");
             })
             .fail(function(xhr, status, error) {
                console.error("(addToDB) Error adding entry:", error);
@@ -208,30 +184,31 @@ getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQ
                   console.log("Response", response);
                   reloadContent('showDBentries.php', '#showDBentries');
                   form.reset();
-                  nameErrorDiv.classList.remove("error");
-                  linkErrorDiv.classList.remove("error");
+                  if (nameErrorDiv) nameErrorDiv.classList.remove("error");
+                  if (linkErrorDiv) linkErrorDiv.classList.remove("error");
                })
                .fail(function(xhr, status, error) {
                   console.error("(submitForm) Error adding entry:", error);
                });
          } else {
             console.log("Something is missing...");
-            nameErrorDiv.classList.toggle("error", entryName === "");
-            linkErrorDiv.classList.toggle("error", entryLink === "");
+            if (nameErrorDiv) nameErrorDiv.classList.toggle("error", entryName === "");
+            if (linkErrorDiv) linkErrorDiv.classList.toggle("error", entryLink === "");
          }
       }
 
-
-
-      // FILE UPLOAD
+      // FILE UPLOAD (Spracovanie JSON odpovede)
       $('#fileInput').change(function() {
          var form = document.forms["fileUploader"];
          var formData = new FormData();
          var fileInput_length = $(this)[0].files.length;
+
          if (fileInput_length > 0) {
             for (var i = 0; i < fileInput_length; i++) {
                formData.append("uploaded_file[]", $(this)[0].files[i]);
             }
+         } else {
+            return;
          }
 
          $.ajax({
@@ -240,42 +217,37 @@ getDB()->exec("create table if not exists $tableName(id INTEGER PRIMARY KEY UNIQ
             data: formData,
             processData: false,
             contentType: false,
+            dataType: 'json', // Automaticky parsuje JSON z PHP
             success: function(response) {
-               console.log("Response", response);
-               if (response.includes("Sorry")) {
-                  alert(response);
-               } else {
-                  var myArray = response.split(";;;").filter(n => n);
-                  myArray.forEach((response) => {
-                     $.post("addDBentry.php", {
-                           entryName: response,
-                           entryLink: "<?php echo "{$linkURL}/uploads/"; ?>" + response
-                        })
-                        .done(function(response) {
-                           console.log("Response", response);
-                           reloadContent('showDBentries.php', '#showDBentries');
-                           form.reset();
-                        })
-                        .fail(function(xhr, status, error) {
-                           console.error("Error adding entry:", error);
-                        });
-                     //sleep(500);
+               console.log("Upload Response:", response);
+
+               // Ak sa podarilo uložiť aspoň nejaké súbory
+               if (response.files && response.files.length > 0) {
+                  response.files.forEach(function(file) {
+                     var normalizedName = file.normalized_name;
+                     var fullLink = "<?php echo "{$linkURL}/uploads/"; ?>" + normalizedName;
+
+                     addToDB(normalizedName, fullLink);
                   });
+                  
+                  reloadContent('showUploads.php', '#showUploads');
+                  if (form) form.reset();
                }
 
-               // Handle success response
+               // Ak sa pri uploade vyskytli chyby
+               if (response.errors && response.errors.length > 0) {
+                  alert("Chyba pri uploade:\n" + response.errors.join("\n"));
+               }
             },
             error: function(xhr, status, error) {
-               console.error(xhr.responseText);
-               // Handle error response
+               console.error("Upload Failed:", xhr.responseText || error);
+               alert("Nastala chyba pri komunikácii so serverom.");
             }
          });
       });
 
-      // Get all elements with the 'tooltip' class
+      // Tooltipy
       var tooltipElements = document.querySelectorAll('.tooltip');
-
-      // Iterate over each element to set tooltip content
       tooltipElements.forEach(function(element) {
          var innerHTML = element.textContent.replace(/\s+/g, ' ');
          element.setAttribute('title', innerHTML);
