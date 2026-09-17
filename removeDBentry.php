@@ -3,21 +3,18 @@ require_once("functions.php");
 
 // 1. Ochrana pred neoprávneným prístupom
 if (!isLoggedIn()) {
-    http_response_code(403);
-    echo "Unauthorized access";
-    exit;
+  http_response_code(403);
+  echo "Unauthorized access";
+  exit;
 }
+
+verifyCSRFToken();
 
 if (!empty($_POST)) {
   $entryID = $_POST['id'] ?? '';
 
   /* removing from db */
   if (isset($entryID) and is_numeric($entryID)) {
-    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
-      http_response_code(400);
-      echo "Invalid table name";
-      exit;
-    }
     $stmt = getDB()->prepare("DELETE FROM $tableName WHERE id = :id");
     $stmt->bindValue(':id', $entryID, SQLITE3_INTEGER);
     $stmt->execute();

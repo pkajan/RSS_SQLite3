@@ -8,12 +8,9 @@ if (!isLoggedIn()) {
     exit;
 }
 
+verifyCSRFToken();
+
 function dbqueryAdd($entryName, $entryLink, $pubDate, $tableName) {
-    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
-        http_response_code(400);
-        echo "Invalid table name";
-        exit;
-    }
 
     $stmt = getDB()->prepare("INSERT INTO {$tableName} (title, link, pubDate) VALUES (:title, :link, :pubDate)");
     $stmt->bindValue(':title', $entryName, SQLITE3_TEXT);
@@ -27,18 +24,9 @@ if (!empty($_POST["entryName"]) && !empty($_POST["entryLink"])) {
     $entryName = trim($_POST["entryName"]);
     $entryLink = trim($_POST["entryLink"]);
 
-    $json_data = json_decode(@file_get_contents("settings.json"), TRUE);
-    $dbTableName = $json_data['tableName'] ?? '';
-
-    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $dbTableName)) {
-        http_response_code(400);
-        echo "Invalid table name configuration";
-        exit;
-    }
-
     $pubDate = date(DATE_RSS);
 
-    if (dbqueryAdd($entryName, $entryLink, $pubDate, $dbTableName)) {
+    if (dbqueryAdd($entryName, $entryLink, $pubDate, $tableName)) {
         echo "Entry added: " . htmlspecialchars($entryName, ENT_QUOTES, 'UTF-8') .
             "\nMagnet: " . htmlspecialchars($entryLink, ENT_QUOTES, 'UTF-8');
     } else {

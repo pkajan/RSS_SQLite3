@@ -1,15 +1,11 @@
 <?php
 require_once("functions.php");
 
-// 1. Načítanie nastavení
-$json_data = json_decode(file_get_contents("settings.json"), TRUE);
-
 if (isLoggedIn()) {
-    $linkURL = htmlspecialchars($json_data['linkURL'] ?? '', ENT_QUOTES, 'UTF-8');
     $directory = __DIR__ . '/uploads';
 
     if (is_dir($directory)) {
-        $scanned_directory = array_diff(scandir($directory, SCANDIR_SORT_DESCENDING), array('..', '.'));
+        $scanned_directory = array_filter(scandir($directory, SCANDIR_SORT_DESCENDING), function ($file) { return strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'torrent';    });
 
         $scannedDirContent = "";
         foreach ($scanned_directory as $value) {

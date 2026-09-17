@@ -1,12 +1,6 @@
 <?php
 require_once("functions.php");
 
-if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
-    http_response_code(400);
-    echo "Invalid table name";
-    exit;
-}
-    
 // Vytvorenie tabuľky ak neexistuje
 getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (500) NOT NULL, link VARCHAR (4500) NOT NULL, pubDate DATETIME NOT NULL)");
 
@@ -17,6 +11,7 @@ getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY U
 <head>
    <title>Add new things into RSS</title>
    <meta charset='UTF-8'>
+   <meta name="csrf-token" content="<?= htmlspecialchars(getCSRFToken(), ENT_QUOTES, 'UTF-8') ?>">
    <!--Import materialize.css-->
    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
    <link type="text/css" rel="stylesheet" href="css/materialize.colors.min.css" media="screen,projection" />
@@ -105,32 +100,58 @@ getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY U
       $(document).ready(function() {
          let reloadTimeInMilliseconds = <?php echo (int)($reloadTimeInMilliseconds ?? 10000); ?>;
 
+         $.ajaxSetup({
+            data: {
+               csrf_token: $('meta[name="csrf-token"]').attr('content')
+            }
+         });
+
          // Function to handle click event on remove links
          function handleRemoveLinkClick(e) {
             e.preventDefault();
-            var fileName = $(this).data("filename");
 
-            $.post("removeFile.php", { fileName: fileName })
+            var fileName = $(this).data("filename");
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            $.post("removeFile.php", {
+                  fileName: fileName,
+                  csrf_token: csrfToken
+               })
                .done(function(response) {
                   console.log("Response", response);
                   reloadContent('showUploads.php', '#showUploads');
                })
                .fail(function(xhr, status, error) {
-                  console.error("(handleRemoveLinkClick) Error removing file:", error);
+                  console.error(
+                     "(handleRemoveLinkClick) Error removing file:",
+                     xhr.status,
+                     error,
+                     xhr.responseText
+                  );
                });
          }
 
          function handleRemoveDBentryClick(e) {
             e.preventDefault();
-            var entryID = $(this).data("id");
 
-            $.post("removeDBentry.php", { id: entryID })
+            var entryID = $(this).data("id");
+            var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            $.post("removeDBentry.php", {
+                  id: entryID,
+                  csrf_token: csrfToken
+               })
                .done(function(response) {
                   console.log("Response", response);
                   reloadContent('showDBentries.php', '#showDBentries');
                })
                .fail(function(xhr, status, error) {
-                  console.error("(handleRemoveDBentryClick) Error removing file:", error);
+                  console.error(
+                     "(handleRemoveDBentryClick) Error removing DB entry:",
+                     xhr.status,
+                     error,
+                     xhr.responseText
+                  );
                });
          }
 
@@ -151,11 +172,13 @@ getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY U
          }, reloadTimeInMilliseconds);
       });
 
-      // ADD TO DB
       function addToDB(entryName, entryLink) {
+         var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
          $.post("addDBentry.php", {
                entryName: entryName,
-               entryLink: entryLink
+               entryLink: entryLink,
+               csrf_token: csrfToken
             })
             .done(function(response) {
                console.log("Response", response);
@@ -171,6 +194,7 @@ getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY U
          var form = document.forms["linkForm"];
          var entryName = form["linkForm_name"].value;
          var entryLink = form["linkForm_link"].value;
+         var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
          var nameErrorDiv = document.getElementById("linkForm_name_DIV");
          var linkErrorDiv = document.getElementById("linkForm_link_DIV");
@@ -178,7 +202,8 @@ getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY U
          if (form.checkValidity()) {
             $.post("addDBentry.php", {
                   entryName: entryName,
-                  entryLink: entryLink
+                  entryLink: entryLink,
+                  csrf_token: csrfToken
                })
                .done(function(response) {
                   console.log("Response", response);
@@ -202,11 +227,14 @@ getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY U
          var form = document.forms["fileUploader"];
          var formData = new FormData();
          var fileInput_length = $(this)[0].files.length;
+         var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
          if (fileInput_length > 0) {
             for (var i = 0; i < fileInput_length; i++) {
                formData.append("uploaded_file[]", $(this)[0].files[i]);
             }
+            // Pridanie CSRF tokenu do FormData
+            formData.append("csrf_token", csrfToken);
          } else {
             return;
          }
@@ -217,11 +245,10 @@ getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY U
             data: formData,
             processData: false,
             contentType: false,
-            dataType: 'json', // Automaticky parsuje JSON z PHP
+            dataType: 'json',
             success: function(response) {
                console.log("Upload Response:", response);
 
-               // Ak sa podarilo uložiť aspoň nejaké súbory
                if (response.files && response.files.length > 0) {
                   response.files.forEach(function(file) {
                      var normalizedName = file.normalized_name;
@@ -229,12 +256,11 @@ getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY U
 
                      addToDB(normalizedName, fullLink);
                   });
-                  
+
                   reloadContent('showUploads.php', '#showUploads');
                   if (form) form.reset();
                }
 
-               // Ak sa pri uploade vyskytli chyby
                if (response.errors && response.errors.length > 0) {
                   alert("Chyba pri uploade:\n" + response.errors.join("\n"));
                }

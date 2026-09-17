@@ -74,14 +74,6 @@ body {
   padding: 5px 5px 5px 5px;
 }
 
-.paddingTopBottom5 {
-  margin-top: 10%;
-  width: 60px;
-  height: 300%;
-  text-align: center;
-  align-content: center;
-}
-
 .padding10 {
   padding: 10px 10px 10px 10px;
 }
@@ -143,4 +135,11 @@ body {
 #linkForm_link,
 #linkForm_name {
   color: #FFFFFF !important;
+}
+
+.input-field.outlined input {
+  height: 56px !important;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
 }

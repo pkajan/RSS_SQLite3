@@ -1,13 +1,13 @@
 <?php
+
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 require_once("functions.php");
 
 $filename = "settings.json";
 if (file_exists($filename)) {
-    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
-        http_response_code(400);
-        echo "Invalid table name";
-        exit;
-    }
 
     // Vytvorenie tabuľky ak neexistuje
     getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (500) NOT NULL, link VARCHAR (4500) NOT NULL, pubDate DATETIME NOT NULL)");
@@ -16,16 +16,18 @@ if (file_exists($filename)) {
     echo "<?xml version='1.0' encoding='UTF-8'?>\n";
     echo "<rss version='2.0'>\n";
     echo "<channel>\n";
+    echo "<lastBuildDate>" . date(DATE_RSS) . "</lastBuildDate>\n";
     echo "<title>{$pageTitle}</title>\n";
     echo "<description>Torrents links to download</description>\n";
     echo "<link>{$linkURL}</link>\n";
 
     // Záznamy načítame v obrátenom poradí priamo z DB
-    $res = getDB()->query("SELECT * FROM {$tableName} ORDER BY id DESC");
+    $res = getDB()->query("SELECT * FROM {$tableName} ORDER BY id DESC LIMIT {$maxEntryLimit}");
     $hasItems = false;
 
     while ($data = $res->fetchArray(SQLITE3_ASSOC)) {
         $hasItems = true;
+        $itemID   = htmlspecialchars($data["id"], ENT_QUOTES, 'UTF-8');
         $title   = htmlspecialchars($data["title"], ENT_QUOTES, 'UTF-8');
         $link    = htmlspecialchars($data["link"], ENT_QUOTES, 'UTF-8');
         $pubDate = htmlspecialchars($data["pubDate"], ENT_QUOTES, 'UTF-8');
@@ -33,16 +35,8 @@ if (file_exists($filename)) {
         echo "<item>\n";
         echo "  <title>{$title}</title>\n";
         echo "  <link>{$link}</link>\n";
+        echo "  <guid>$itemID--" . md5($link) . "</guid>\n";
         echo "  <pubDate>{$pubDate}</pubDate>\n";
-        echo "</item>\n";
-    }
-
-    // Ak sa z DB nenačítal ani jeden riadok, vypíšeme výpredvolený "NULL" item
-    if (!$hasItems) {
-        echo "<item>\n";
-        echo "  <title>NULL</title>\n";
-        echo "  <link></link>\n";
-        echo "  <pubDate>Mon, 01 Jan 2020 00:00:00 +0200</pubDate>\n";
         echo "</item>\n";
     }
 

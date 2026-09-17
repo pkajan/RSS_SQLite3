@@ -2,18 +2,8 @@
 require_once("functions.php");
 
 if (isLoggedIn()) {
-    $json_data = json_decode(file_get_contents("settings.json"), TRUE);
-    $tableName = $json_data['tableName'] ?? '';
-    $linkURL = htmlspecialchars($json_data['linkURL'] ?? '', ENT_QUOTES, 'UTF-8');
-    $pageTitle = htmlspecialchars($json_data['pageTitle'] ?? '', ENT_QUOTES, 'UTF-8');
 
-    if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
-        http_response_code(400);
-        echo "Invalid table name";
-        exit;
-    }
-
-    // Záznamy načítame v obrátenom poradí priamo z DB (O(1) réžia v PHP)
+    // Záznamy načítame v obrátenom poradí priamo z DB
     $res = getDB()->query("SELECT * FROM {$tableName} ORDER BY id DESC");
 
     $output = "";

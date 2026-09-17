@@ -21,6 +21,8 @@ if (!isLoggedIn()) {
   exit;
 }
 
+verifyCSRFToken();
+
 if (!isset($_FILES["uploaded_file"])) {
   http_response_code(400);
   $response['errors'][] = 'No files uploaded.';
@@ -61,12 +63,23 @@ foreach ($fileNames as $counter => $fileName) {
 
   $tmpFilePath = is_array($uploadedFileData["tmp_name"]) ? $uploadedFileData["tmp_name"][$counter] : $uploadedFileData["tmp_name"];
   $fileSize    = is_array($uploadedFileData["size"]) ? $uploadedFileData["size"][$counter] : $uploadedFileData["size"];
+  $baseFilename = basename($fileName);
+  $fileHash = sha1_file($tmpFilePath);
 
-  $actualtime    = date("Y-m-d--H-i-s");
-  $baseFilename  = basename($fileName);
-  $normalizeName = removeWeirdThings("{$actualtime}-{$baseFilename}");
-  $target_file   = $target_dir . $normalizeName;
+  if ($fileHash === false) {
+    $response['errors'][] = "Failed to calculate SHA-1 hash for file '{$fileName}'.";
+    continue;
+  }
   
+  $extension = pathinfo($baseFilename, PATHINFO_EXTENSION);
+  $filenameWithoutExtension = pathinfo($baseFilename, PATHINFO_FILENAME);
+
+  $normalizeName = removeWeirdThings(
+    "{$filenameWithoutExtension}-{$fileHash}.{$extension}"
+  );
+
+  $target_file   = $target_dir . $normalizeName;
+
   $fileErrors = [];
 
   // A. Kontrola existencie
@@ -81,7 +94,7 @@ foreach ($fileNames as $counter => $fileName) {
 
   // C. Kontrola prípony
   $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-  if ($imageFileType !== "torrent" && $imageFileType !== "mackousko") {
+  if ($imageFileType !== "torrent") {
     $fileErrors[] = "File '{$fileName}' has invalid extension (.{$imageFileType}).";
   }
 

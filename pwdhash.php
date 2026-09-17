@@ -33,9 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if (file_put_contents($jsonFile, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) !== false) {
 
             // Generovanie 16-znakového náhodného reťazca
-            $randomString = bin2hex(random_bytes(8)); // 8 bajtov = 16 hex znakov
             $currentFile = __FILE__;
-            $newFileName = "pwdhash_{$randomString}_RENAME_IF_NECESSARY.php.bak";
+            $newFileName = "pwdhash_RENAME_IF_NECESSARY.php";
             $newFilePath = __DIR__ . '/' . $newFileName;
 
             // Premenovanie aktuálneho súboru
@@ -77,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             margin-bottom: 15px;
         }
 
-        input[type="text"] {
+        input[type="text"],input[type="password"] {
             width: 100%;
             padding: 8px;
             margin: 8px 0;
@@ -135,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <form method="POST" action="">
         <input type="hidden" name="action" value="generate">
         <label for="password">Zadajte heslo:</label>
-        <input type="text" id="password" name="password" value="<?php echo htmlspecialchars($inputPassword, ENT_QUOTES, 'UTF-8') ?>" required autofocus>
+        <input type="password" id="password" name="password" value="<?php echo htmlspecialchars($inputPassword, ENT_QUOTES, 'UTF-8') ?>" required autofocus>
         <button type="submit">Vygenerovať hash</button>
     </form>
 

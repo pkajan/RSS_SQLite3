@@ -8,6 +8,8 @@ session_start([
 
 require_once("functions.php");
 
+verifyCSRFToken();
+
 if (!empty($_POST)) {
     $action = $_POST['action'] ?? '';
 

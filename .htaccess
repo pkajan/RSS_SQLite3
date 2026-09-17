@@ -4,3 +4,4 @@ RewriteRule ^.*$ https://%{HTTP:Host}%{REQUEST_URI} [L,R=permanent]
 
 RewriteRule ^(settings.json) - [F,L,NC]
 RewriteRule ^(database.db) - [F,L,NC]
+RewriteRule ^pwdhash_RENAME_IF_NECESSARY\.php$ - [F,L,NC]

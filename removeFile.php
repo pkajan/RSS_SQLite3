@@ -8,6 +8,8 @@ if (!isLoggedIn()) {
     exit;
 }
 
+verifyCSRFToken();
+
 if (!empty($_POST["fileName"])) {
     $fileName = basename($_POST["fileName"]);
     $fileName = preg_replace('/[^\p{L}\p{N}._\(\) \-–—]/u', '', $fileName);
