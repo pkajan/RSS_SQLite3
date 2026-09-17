@@ -1,5 +1,7 @@
 <?php
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $json_data = json_decode(file_get_contents("settings.json"), TRUE);
 $dbFileName = $json_data['dbFileName'];
 
@@ -11,12 +13,15 @@ if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $json_data['tableName'])) {
     $tableName = $json_data['tableName'] ?? '';
 }
 
+// Vytvorenie tabuľky ak neexistuje
+getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (500) NOT NULL, link VARCHAR (4500) NOT NULL, pubDate DATETIME NOT NULL)");
+
 $linkURL    = htmlspecialchars($json_data['linkURL'] ?? '', ENT_QUOTES, 'UTF-8');
 $pageTitle  = htmlspecialchars($json_data['pageTitle'] ?? '', ENT_QUOTES, 'UTF-8');
-$reloadTimeInMilliseconds = $json_data['reloadTimeInMilliseconds'] ?? 10000;
-$maxFileSizeLimit = $json_data['maxFileSizeLimit'] ?? 5000000;
+$reloadTimeInMilliseconds = intval($json_data['reloadTimeInMilliseconds'] ?? 10000);
+$maxFileSizeLimit = intval($json_data['maxFileSizeLimit'] ?? 5000000);
 $pwdHashControl = $json_data['pwd_hash'];
-$maxEntryLimit = $json_data['maxEntryLimit'] ?? 100;
+$maxEntryLimit = intval($json_data['maxEntryLimit'] ?? 100);
 
 
 function getDB()
@@ -35,20 +40,11 @@ function getDB()
     return $db;
 }
 
-function isLoggedIn()
-{
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-
+function isLoggedIn() {
     return !empty($_SESSION['is_logged_in']);
 }
 
 function getCSRFToken(): string {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
@@ -57,10 +53,6 @@ function getCSRFToken(): string {
 }
 
 function verifyCSRFToken(): void {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
-
     $token = $_POST['csrf_token'] ?? '';
 
     if (

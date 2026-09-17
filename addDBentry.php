@@ -11,7 +11,6 @@ if (!isLoggedIn()) {
 verifyCSRFToken();
 
 function dbqueryAdd($entryName, $entryLink, $pubDate, $tableName) {
-
     $stmt = getDB()->prepare("INSERT INTO {$tableName} (title, link, pubDate) VALUES (:title, :link, :pubDate)");
     $stmt->bindValue(':title', $entryName, SQLITE3_TEXT);
     $stmt->bindValue(':link', $entryLink, SQLITE3_TEXT);
@@ -21,8 +20,8 @@ function dbqueryAdd($entryName, $entryLink, $pubDate, $tableName) {
 }
 
 if (!empty($_POST["entryName"]) && !empty($_POST["entryLink"])) {
-    $entryName = trim($_POST["entryName"]);
-    $entryLink = trim($_POST["entryLink"]);
+    $entryName = mb_substr(trim($_POST["entryName"]), 0, 500, 'UTF-8');
+    $entryLink = mb_substr(trim($_POST["entryLink"]), 0, 4500, 'UTF-8');
 
     $pubDate = date(DATE_RSS);
 

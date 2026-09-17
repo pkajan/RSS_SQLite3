@@ -88,7 +88,7 @@ foreach ($fileNames as $counter => $fileName) {
   }
 
   // B. Kontrola veľkosti
-  if (isset($maxFileSizeLimit) && $fileSize > $maxFileSizeLimit) {
+  if ($fileSize > $maxFileSizeLimit) {
     $fileErrors[] = "File '{$fileName}' is too large ({$fileSize} bytes).";
   }
 

@@ -3,16 +3,13 @@
 header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
+header('X-Content-Type-Options: nosniff');
+header("Content-Type: text/xml; charset=utf-8");
 
 require_once("functions.php");
 
 $filename = "settings.json";
 if (file_exists($filename)) {
-
-    // Vytvorenie tabuľky ak neexistuje
-    getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (500) NOT NULL, link VARCHAR (4500) NOT NULL, pubDate DATETIME NOT NULL)");
-
-    header("Content-Type: text/xml; charset=utf-8");
     echo "<?xml version='1.0' encoding='UTF-8'?>\n";
     echo "<rss version='2.0'>\n";
     echo "<channel>\n";

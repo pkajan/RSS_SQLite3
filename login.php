@@ -31,6 +31,7 @@ if (!empty($_POST)) {
             echo "true";
         } else {
             echo "Invalid Login";
+            sleep(1);
         }
     }
 }

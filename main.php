@@ -1,9 +1,5 @@
 <?php
 require_once("functions.php");
-
-// Vytvorenie tabuľky ak neexistuje
-getDB()->exec("CREATE TABLE IF NOT EXISTS {$tableName} (id INTEGER PRIMARY KEY UNIQUE, title VARCHAR (500) NOT NULL, link VARCHAR (4500) NOT NULL, pubDate DATETIME NOT NULL)");
-
 ?>
 <!DOCTYPE html>
 <html>
