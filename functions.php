@@ -22,10 +22,10 @@ $reloadTimeInMilliseconds = intval($json_data['reloadTimeInMilliseconds'] ?? 100
 $maxFileSizeLimit = intval($json_data['maxFileSizeLimit'] ?? 5000000);
 $pwdHashControl = $json_data['pwd_hash'];
 $maxEntryLimit = intval($json_data['maxEntryLimit'] ?? 100);
+$uploadOrder = htmlspecialchars($json_data['uploadOrder'] ?? 'DESC', ENT_QUOTES, 'UTF-8');
 
 
-function getDB()
-{
+function getDB() {
     static $db = null;
 
     if ($db === null) {
@@ -33,8 +33,9 @@ function getDB()
         $db = new SQLite3($dbFileName);
 
         // Nastavenie pragma príkazov pre lepšiu konkurentnosť
-        $db->exec('PRAGMA journal_mode=WAL;');
         $db->exec('PRAGMA busy_timeout=5000;');
+        $db->exec('PRAGMA journal_mode=WAL;');
+        
     }
 
     return $db;

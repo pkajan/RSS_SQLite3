@@ -6,5 +6,6 @@
     "reloadTimeInMilliseconds": 10000,
     "maxFileSizeLimit": 5000000,
     "maxEntryLimit": 100,
-    "pwd_hash": "hash_of_your_password"
+    "uploadOrder": "DESC",
+    "pwd_hash": ""
 }

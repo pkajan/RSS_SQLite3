@@ -5,7 +5,18 @@ if (isLoggedIn()) {
     $directory = __DIR__ . '/uploads';
 
     if (is_dir($directory)) {
-        $scanned_directory = array_filter(scandir($directory, SCANDIR_SORT_DESCENDING), function ($file) { return strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'torrent';    });
+        // 1. Načítanie súborov priamo so zoradením od najnovšieho pomocou SCANDIR_SORT_DESCENDING
+        $scanned_directory = array_filter(scandir($directory, SCANDIR_SORT_DESCENDING), function ($file) use ($directory) {
+            return is_file($directory . '/' . $file) && strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'torrent';
+        });
+
+        // 2. Úprava poradia podľa času úpravy
+        usort($scanned_directory, function ($a, $b) use ($directory, $uploadOrder) {
+            $timeA = filemtime($directory . '/' . $a);
+            $timeB = filemtime($directory . '/' . $b);
+
+            return strcasecmp($uploadOrder, 'ASC') === 0 ? $timeA <=> $timeB : $timeB <=> $timeA;
+        });
 
         $scannedDirContent = "";
         foreach ($scanned_directory as $value) {
